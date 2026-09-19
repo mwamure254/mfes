@@ -1,0 +1,37 @@
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body my-2 text-center border-2">
+                <h1><a href="#"><i class="mdi mdi-info-circle text-danger"></i></a></h1>
+                <h5 class="text-center">
+                    Confirm to Logout
+                </h5>
+                <div class="row my-2 justify-content-center">
+                    <button class="btn col-sm-4 btn-warning mx-2" data-bs-dismiss="modal">Cancel</button>
+
+                    <form class="col-sm-4 btn-success mx-2" th:action="@{/logout}" method="post">
+                        <button class="btn btn-success" type="submit">Proceed</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div><!-- End Logout Modal-->
+
+<!-- plugins:js -->
+<script th:src="@{/vendors/js/vendor.bundle.base.js}"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<script th:src="@{/vendors/chart.js/Chart.min.js}"></script>
+<script th:src="@{/vendors/jquery-circle-progress/js/circle-progress.min.js}"></script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script th:src="@{/js/off-canvas.js}"></script>
+<script th:src="@{/js/hoverable-collapse.js}"></script>
+<script th:src="@{/js/misc.js}"></script>
+<!-- endinject -->
+<!-- Custom js for this page -->
+<script th:src="@{/js/dashboard.js}"></script>
+<!-- End custom js for this page -->

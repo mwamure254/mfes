@@ -7,7 +7,7 @@
   <meta name="author" content="mfano">
 
   <!-- Custom title for this page-->
-  <title>MFES | Home</title>
+  <title>MFES | Admin</title>
 
   <!-- Custom styles for this page-->
 </th:block>
@@ -34,7 +34,7 @@
           <div class="row" id="proBanner">
             <div class="col-12">
               <span class="d-flex align-items-center purchase-popup">
-                <p>Like our services? Check out our premium version for more.</p>
+                <p>Like what you see? Check out our premium version for more.</p>
                 <a href="#"
                   target="_blank" class="btn ml-auto download-button">Download Free Version</a>
                 <a href="#" target="_blank"
@@ -111,22 +111,21 @@
 
             </div>
           </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <th:block th:insert="~{partials/_footer}" />
+          <!-- =====End Sidebar=====-->
+          <!-- partial -->
         </div>
-        <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-        <th:block th:insert="~{partials/_footer}" />
-        <!-- =====End Sidebar=====-->
-        <!-- partial -->
+        <!-- main-panel ends -->
       </div>
-      <!-- main-panel ends -->
+      <!-- page-body-wrapper ends -->
     </div>
-    <!-- page-body-wrapper ends -->
-  </div>
-  <!-- container-scroller -->
+    <!-- container-scroller -->
 
-  <!-- ======= Sidebar ======= -->
-  <th:block th:insert="~{partials/_scripts}" />
-  <!-- =====End Sidebar=====-->
+    <!-- ======= Sidebar ======= -->
+    <th:block th:insert="~{partials/_scripts}" />
+    <!-- =====End Sidebar=====-->
 </body>
 
 </html>

@@ -1,0 +1,35 @@
+<head th:fragment="common_header(title,links,metas)">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Favicons -->
+    <link th:href="@{/images/mfano.png}" rel="icon">
+
+    <title th:utext="${title}">-- MFES HOME--</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <th:block th:replace="${metas} ?: ~{}" />
+
+    <!-- plugins:css -->
+    <link rel="stylesheet" th:href="@{/vendors/mdi/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" th:href="@{/vendors/flag-icon-css/css/flag-icon.min.css}">
+    <link rel="stylesheet" th:href="@{/vendors/css/vendor.bundle.base.css}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" th:href="@{/vendors/font-awesome/css/font-awesome.min.css}" />
+    <link rel="stylesheet" th:href="@{/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+    <!-- End layout styles -->
+    <th:block th:replace="${links} ?: ~{}" />
+</head>
