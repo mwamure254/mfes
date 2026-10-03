@@ -2,8 +2,10 @@ package com.mfano.mfes.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +19,6 @@ import com.mfano.mfes.auth.services.CustomDetailService;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final CustomDetailService customDetailService;
     private final PasswordEncoder passwordEncoder;
     private final AuthHandler auth;
@@ -74,19 +75,33 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/landing")
+                .logoutSuccessUrl("/login?logout")
                 .permitAll()
             );
 
         return http.build();
     }
 
+    // =====================================================
+    // AUTHENTICATION PROVIDER
+    // =====================================================
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(customDetailService);
+    AuthenticationProvider authenticationProvider() {
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customDetailService);
 
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
+    }
+
+    // =====================================================
+    // AUTHENTICATION MANAGER
+    // =====================================================
+    @Bean
+    AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration)
+            throws Exception {
+
+        return configuration.getAuthenticationManager();
     }
 }

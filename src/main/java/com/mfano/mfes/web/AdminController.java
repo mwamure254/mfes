@@ -1,6 +1,4 @@
-package com.mfano.mfes.controllers;
-
-import java.util.Set;
+package com.mfano.mfes.web;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,12 +9,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mfes.config.CustomUserDetails;
 import com.mfano.mfes.dtos.UserDto;
-import com.mfano.mfes.auth.models.Role;
 import com.mfano.mfes.auth.services.BranchService;
 import com.mfano.mfes.auth.services.AuditService;
 import com.mfano.mfes.auth.services.RoleService;
