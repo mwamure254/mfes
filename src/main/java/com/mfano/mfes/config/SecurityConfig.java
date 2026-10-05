@@ -1,5 +1,9 @@
 package com.mfano.mfes.config;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,18 +14,23 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.mfano.mfes.auth.services.CustomDetailService;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
     private final CustomDetailService customDetailService;
     private final PasswordEncoder passwordEncoder;
     private final AuthHandler auth;
+
+    public SecurityConfig(CustomDetailService customDetailService, PasswordEncoder passwordEncoder, AuthHandler auth) {
+        this.customDetailService = customDetailService;
+        this.passwordEncoder = passwordEncoder;
+        this.auth = auth;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -103,5 +112,24 @@ public class SecurityConfig {
             throws Exception {
 
         return configuration.getAuthenticationManager();
+    }
+
+    // IMAGE ROUTE
+    @Value("${app.upload-dir}")
+    private String uploadDir;
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+        Path profilePath = Paths.get(uploadDir, "images", "profile")
+                .toAbsolutePath()
+                .normalize();
+
+        Path documentPath = Paths.get(uploadDir, "documents")
+                .toAbsolutePath()
+                .normalize();
+
+        registry.addResourceHandler("/images/profile/**", "/documents/**")
+                .addResourceLocations(profilePath.toUri().toString(), documentPath.toUri().toString());
     }
 }

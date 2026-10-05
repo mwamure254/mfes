@@ -1,18 +1,18 @@
 package com.mfano.mfes.auth.services;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import com.mfano.mfes.auth.models.AuditEntry;
 import com.mfano.mfes.auth.repositories.AuditRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class AuditService {
      private final AuditRepository repo;
+
+     public AuditService(AuditRepository repo){
+        this.repo=repo;
+     }
 
     public void record(String action, String details) {
         AuditEntry entry = new AuditEntry();

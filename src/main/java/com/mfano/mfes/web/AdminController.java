@@ -19,12 +19,10 @@ import com.mfano.mfes.auth.services.RoleService;
 import com.mfano.mfes.auth.services.UserService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @Controller
 @PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
-@RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
     // private final PostService postService;
@@ -32,6 +30,13 @@ public class AdminController {
     private final AuditService auditService;
     private final RoleService roleService;
     private final BranchService storeService;
+
+    public AdminController(UserService userService, AuditService auditService, RoleService roleService, BranchService branchService){
+        this.userService=userService;
+        this.auditService=auditService;
+        this.roleService=roleService;
+        this.storeService=branchService;
+    }
 
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CustomUserDetails auth, RedirectAttributes red) {

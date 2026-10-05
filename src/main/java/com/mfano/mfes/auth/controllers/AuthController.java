@@ -22,10 +22,7 @@ import com.mfano.mfes.auth.services.AuditService;
 import com.mfano.mfes.auth.services.RoleService;
 import com.mfano.mfes.auth.services.UserService;
 
-import lombok.RequiredArgsConstructor;
-
 @Controller
-@RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
     private final RoleService roleService;
@@ -35,6 +32,13 @@ public class AuthController {
     private String login = "redirect:/login?error";
 
     private final AuditService auditService;
+
+    public AuthController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder, AuditService auditService){
+        this.userService=userService;
+        this.roleService=roleService;
+        this.passwordEncoder=passwordEncoder;
+        this.auditService=auditService;
+    }
 
     // guest user
     @GetMapping("/")

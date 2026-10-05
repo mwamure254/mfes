@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 
 import com.mfano.mfes.config.CustomUserDetails;
 import com.mfano.mfes.auth.models.User;
-import com.mfano.mfes.auth.services.UserService;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class CustomDetailService implements UserDetailsService {
     private final UserService userRepo;
+
+    public CustomDetailService(UserService userRepo){
+        this.userRepo=userRepo;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

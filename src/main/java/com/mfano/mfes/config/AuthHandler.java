@@ -18,10 +18,8 @@ import com.mfano.mfes.auth.services.AuditService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class AuthHandler implements AuthenticationSuccessHandler,
         AuthenticationFailureHandler, LogoutHandler {
 
@@ -31,6 +29,10 @@ public class AuthHandler implements AuthenticationSuccessHandler,
     private String msg(String ms) {
         return "/login?error=true&message=" +
                 URLEncoder.encode(ms, StandardCharsets.UTF_8);
+    }
+
+     public AuthHandler(AuditService auditService) {
+        this.auditService = auditService;
     }
 
     @Override

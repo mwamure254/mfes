@@ -16,14 +16,11 @@ import com.mfano.mfes.auth.models.Role;
 import com.mfano.mfes.auth.models.VerificationToken;
 import com.mfano.mfes.auth.repositories.TokenRepositories;
 import com.mfano.mfes.auth.repositories.UserRepository;
-import com.mfano.mfes.auth.services.BranchService;
 import com.mfano.mfes.utils.mail.MailService;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -37,6 +34,16 @@ public class UserService {
 
     @Value("${app.base-url}")
     private String appBaseUrl;
+
+    public UserService (UserRepository userRepository, PasswordEncoder passwordEncoder, BranchService branchService, RoleService roleService, TokenRepositories tokenRepository, MailService emailService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.branchService = branchService;
+        this.roleService = roleService;
+        this.tokenRepository = tokenRepository;
+        this.emailService = emailService;
+
+    }
 
     @Transactional
     public void registerUser(UserDto userDto) {

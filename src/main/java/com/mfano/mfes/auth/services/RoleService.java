@@ -9,12 +9,13 @@ import com.mfano.mfes.auth.models.Role;
 import com.mfano.mfes.auth.models.User;
 import com.mfano.mfes.auth.repositories.RoleRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class RoleService {
     private final RoleRepository roleRepository;
+
+    public RoleService(RoleRepository roleRepository){
+        this.roleRepository=roleRepository;
+    }
 
     // Get All Roles
     public List<Role> findAll() {

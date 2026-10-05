@@ -16,10 +16,8 @@ import com.mfano.mfes.auth.repositories.RoleRepository;
 import com.mfano.mfes.auth.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 @Transactional
 public class Initializer implements CommandLineRunner {
 
@@ -33,6 +31,13 @@ public class Initializer implements CommandLineRunner {
 
     @Value("${app.admin.password}")
     private String adminPassword;
+
+    public Initializer(UserRepository userRepository, RoleRepository roleRepo, PasswordEncoder passwordEncoder, BranchRepository branchRepo){
+            this.userRepository=userRepository;
+            this.roleRepo=roleRepo;
+            this.passwordEncoder=passwordEncoder;
+            this.branchRepo=branchRepo;
+    }
 
     @Override
     public void run(String... args) {
