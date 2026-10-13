@@ -1,0 +1,42 @@
+.product-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+}
+
+.receipt {
+    width: 80mm;
+    max-width: 100%;
+    font-size: 12px;
+}
+
+.receipt hr {
+    margin: 8px 0;
+    border-top: 1px dashed #000;
+    opacity: 1;
+}
+
+@media print {
+    @page {
+        size: 80mm auto;
+        margin: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    .receipt {
+        width: 80mm;
+        padding: 5mm !important;
+    }
+
+    .receipt hr {
+        border-top: 1px dashed #000;
+    }
+}

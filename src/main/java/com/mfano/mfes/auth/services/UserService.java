@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.mfano.mfes.dtos.UserDto;
 import com.mfano.mfes.auth.models.User;
@@ -16,13 +17,14 @@ import com.mfano.mfes.auth.models.Role;
 import com.mfano.mfes.auth.models.VerificationToken;
 import com.mfano.mfes.auth.repositories.TokenRepositories;
 import com.mfano.mfes.auth.repositories.UserRepository;
+import com.mfano.mfes.config.CustomUserDetails;
 import com.mfano.mfes.utils.mail.MailService;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
-
+    private final ProfileService profileService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     // private final ProfileService profileService;
@@ -35,13 +37,16 @@ public class UserService {
     @Value("${app.base-url}")
     private String appBaseUrl;
 
-    public UserService (UserRepository userRepository, PasswordEncoder passwordEncoder, BranchService branchService, RoleService roleService, TokenRepositories tokenRepository, MailService emailService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BranchService branchService,
+            RoleService roleService,
+            TokenRepositories tokenRepository, MailService emailService, ProfileService profileService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.branchService = branchService;
         this.roleService = roleService;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
+        this.profileService = profileService;
 
     }
 
@@ -62,8 +67,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setEnabled(true);
         user.setFin(userDto.getFin());
-        user.setLan(userDto.getLan());             
-        user.setGender(userDto.getGender());  
+        user.setLan(userDto.getLan());
+        user.setGender(userDto.getGender());
 
         user.setBranch(branchService.findById(userDto.getBranch()));
         user.setRoles(Set.of(roleService.findById(userDto.getRole())));
@@ -76,17 +81,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void update(Long id, UserDto userDto){
+    public void update(Long id, UserDto userDto) {
         User existing = findById(id);
 
         existing.setFin(userDto.getFin());
-        existing.setLan(userDto.getLan());                     
-        existing.setGender(userDto.getGender());  
+        existing.setLan(userDto.getLan());
+        existing.setGender(userDto.getGender());
 
         existing.setPassword(passwordEncoder.encode(userDto.getPassword()));
         existing.setEnabled(true);
         existing.setBranch(branchService.findById(userDto.getBranch()));
-        //existing.setRoles(Set.of(roleService.findById(userDto.getRole())));
+        // existing.setRoles(Set.of(roleService.findById(userDto.getRole())));
         existing.getRoles().add(roleService.findById(userDto.getRole()));
         save(existing);
     }
@@ -192,11 +197,25 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    //To Do
-     public void removeRoleFromUser(Long userId, Long roleId) {
+    // To Do
+    public void assignRoleToUser(Long userId, Long roleId) {
         User user = findById(userId);
         Role role = roleService.findById(roleId);
-        user.getRoles().removeIf(r->r.getId().equals(role.getId()));
+        user.getRoles().add(role);
         save(user);
+    }
+
+    public void removeRoleFromUser(Long userId, Long roleId) {
+        User user = findById(userId);
+        Role role = roleService.findById(roleId);
+        user.getRoles().removeIf(r -> r.getId().equals(role.getId()));
+        save(user);
+    }
+
+    // Expose user and profile
+    public Model getPrices(CustomUserDetails auth, Model red) {
+        red.addAttribute("profile", profileService.checkProfile(auth.getId()));
+        red.addAttribute("author", findByEmail(auth.getEmail()));
+        return red;
     }
 }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+
+	<!-- Custom meta data for this page-->
+	<title>MFES | Settings</title>
+
+	<!-- Custom styles for this page-->
+
+</th:block>
+
+<body>
+
+	<!-- ======= Header ======= -->
+	<th:block th:insert="~{partials/_topbar}" />
+	<!-- =====End Header===== -->
+
+	<!-- ======= Sidebar ======= -->
+	<th:block th:insert="~{partials/_sidebar}" />
+	<!-- =====End Sidebar=====-->
+
+	<!-- ======Main===== -->
+	<main id="main" class="main">
+
+		<div class="pagetitle my-4">
+			<h3>Customise your experience</h3>
+			<nav class="bg-dark">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="/"><i class="bi bi-house-door"></i>
+							<span>Home</span></a></li>
+					<li class="breadcrumb-item"><a href="#"><i class="bi bi-people"></i>
+							<span>Users</span></a></li>
+					<li class="breadcrumb-item active"><i class="bi bi-record-fill"></i>Settings</li>
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<section class="section">
+			<form>
+				<h5 class="card-title">Notifications</h5>
+
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="changesMade" checked>
+					<label class="form-check-label" for="changesMade">
+						Changes made to your account
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="newProducts" checked>
+					<label class="form-check-label" for="newProducts">
+						Information on new products and services
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="proOffers">
+					<label class="form-check-label" for="proOffers">
+						Marketing and promo offers
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
+					<label class="form-check-label" for="securityNotify">
+						Security alerts
+					</label>
+				</div>
+
+				<h5 class="card-title">Promotions</h5>
+
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="changesMade" checked>
+					<label class="form-check-label" for="changesMade">
+						Upgrade
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="newProducts" checked>
+					<label class="form-check-label" for="newProducts">
+						New Releases
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="proOffers">
+					<label class="form-check-label" for="proOffers">
+						Feeds
+					</label>
+				</div>
+				</div>
+
+				<div class="footer">
+					<button type="reset" class="btn btn-warning">Clear Changes</button>
+					<button type="submit" class="btn btn-primary">Save Changes</button>
+				</div>
+			</form><!-- End settings Form -->
+		</section>
+
+	</main><!-- End #main -->
+
+	<!-- =====footer===== -->
+	<th:block th:insert="~{partials/_footer}" />
+</body>
+
+</html>

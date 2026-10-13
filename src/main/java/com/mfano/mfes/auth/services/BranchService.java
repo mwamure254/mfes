@@ -18,6 +18,10 @@ public class BranchService {
         branchRepository.save(branch);
     }
 
+    public Branch findByCode(String code) {
+        return branchRepository.findByCode(code);
+    }
+
     public Branch getBranchById(Long id) {
         return branchRepository.findById(id).orElse(null);
     }

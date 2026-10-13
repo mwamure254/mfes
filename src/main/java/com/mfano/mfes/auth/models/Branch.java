@@ -14,6 +14,8 @@ import lombok.Setter;
 public class Branch extends CommonObject {
     private String location;
     private String manager;
+    private String code;
+    private String phone;
     private String contact;  
     private String email;
     private String address;

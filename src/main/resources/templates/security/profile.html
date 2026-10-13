@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+  <!-- Custom meta data for this template-->
+  <meta name="description" content="meo home page">
+  <meta name="author" content="mfano">
+  <!-- Custom title for this page-->
+  <title>MFES | Profile</title>
+  <!-- Custom styles for this page-->
+</th:block>
+
+<body class="profile-page">
+
+  <!-- ======= Header ======= -->
+  <th:block th:insert="~{partials/_topbar}" />
+  <!-- =====End Header===== -->
+
+  <!-- ======= Sidebar ======= -->
+  <th:block th:insert="~{partials/_sidebar}" />
+  <!-- =====End Sidebar=====-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle my-4">
+      <h3>Profile</h3>
+      <nav class="bg-dark">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/"><i class="bi bi-house-door"></i>
+              <span>Home</span></a></li>
+          <li class="breadcrumb-item active"><i class="bi bi-record-fill"></i>Profile</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section profile">
+      <div class="row">
+        <div class="col-xl-4">
+
+          <div class="card">
+            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+              <img th:src="${profile.image == null or profile.image.isEmpty()}
+        ? @{/image/rocket.svg}
+        : @{/profiles/{filename}(filename=${profile.image})}" alt="MY" class="rounded-circle" height="150"
+                width="120">
+
+              <div class="pt-2">
+                <a data-bs-toggle="modal" data-bs-target="#image" class="btn btn-primary btn-sm"
+                  title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                <a data-bs-toggle="modal" data-bs-target="#del" class="btn btn-danger btn-sm"
+                  title="Remove my profile image"><i class="bi bi-trash"></i></a>
+              </div>
+
+              <h2 th:text="${author.fin + ' ' + author.lan}">First Last</h2>
+              <h3 th:text="${profile.designation}">Your Designation</h3>
+              <div class="social-links mt-2">
+                <a th:href="${#strings.isEmpty(profile.twitter)} ? '#' : ${profile.twitter}" class="twitter"><i
+                    class="bi bi-twitter"></i></a>
+                <a th:href="${#strings.isEmpty(profile.facebook)} ? '#' : ${profile.facebook}" class="facebook"><i
+                    class="bi bi-facebook"></i></a>
+                <a th:href="${#strings.isEmpty(profile.instagram)} ? '#' : ${profile.instagram}" class="instagram"><i
+                    class="bi bi-instagram"></i></a>
+                <a th:href="${#strings.isEmpty(profile.linkedin)} ? '#' : ${profile.linkedin}" class="linkedin"><i
+                    class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-xl-8">
+
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <ul class="nav nav-tabs">
+
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab"
+                    data-bs-target="#profile-overview">Overview</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change
+                    Password</button>
+                </li>
+
+              </ul>
+              <div class="tab-content pt-2">
+
+                <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                  <h5 class="card-title">About</h5>
+                  <p class="small fst-italic" th:text="${profile.about}"></p>
+
+                  <h5 class="card-title">Profile Details</h5>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label ">First Name</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.fin}">Kevin</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label ">Other Name</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.other}">Anderson</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label ">Last Name</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.lan}">Harry</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Gender</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.gender}">Male</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">ID</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.SN}">3*****5</div>
+                  </div>
+
+                  <hr class="fas fa-divide">
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Institution</div>
+                    <div class="col-lg-9 col-md-8">0411920, KDF0, Dakacha</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Designation</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.designation}">Web Designer</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">County</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.county}">Kilifi</div>
+                  </div>
+
+                  <hr class="fas fa-divide">
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Address</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.address}">A108 Adam Street, New York, NY 535022
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.phone}">(+254) 712 *** 130</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Email</div>
+                    <div class="col-lg-9 col-md-8" th:text="${profile.email}">name@example.com</div>
+                  </div>
+
+                </div>
+
+                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+                  <!-- Profile Edit Form -->
+                  <form th:action="@{/profile/update}" method="post" th:object="${profile}">
+                    <div class="row mb-3">
+                      <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
+                      <div class="col-md-8 col-lg-9">
+                        <textarea th:field="*{about}" class="form-control" id="about"
+                          style="height: 100px" required>Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit. Fuga sequi sed ea saepe at unde.</textarea>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="fin" class="col-md-4 col-lg-3 col-form-label">First Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{fin}" type="text" class="form-control" id="fin" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="lan" class="col-md-4 col-lg-3 col-form-label">Other Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{other}" type="text" class="form-control" id="lan" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="other" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{lan}" type="text" class="form-control" id="other" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Gender" class="col-md-4 col-lg-3 col-form-label">Gender</label>
+                      <div class="col-md-8 col-lg-9">
+                        <select th:field="*{gender}" class="form-select" id="Gender" required>
+                          <option value="">Select gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="ID" class="col-md-4 col-lg-3 col-form-label">ID</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{SN}" type="text" class="form-control" id="ID" required>
+                      </div>
+                    </div>
+
+                    <hr class="fas fa-divide">
+
+                    <div class="row mb-3">
+                      <label for="institutionid" class="col-md-4 col-lg-3 col-form-label">Institution</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="institutionid" type="text" class="form-control" id="institutionid"
+                          value="Lueilwitz, Wisoky and Leuschke">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="designation" class="col-md-4 col-lg-3 col-form-label">Designation</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{designation}" type="text" class="form-control" id="designation" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="country" class="col-md-4 col-lg-3 col-form-label">County</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{county}" type="text" class="form-control" id="country" required>
+                      </div>
+                    </div>
+
+                    <hr class="fas fa-divide">
+
+                    <div class="row mb-3">
+                      <label for="address" class="col-md-4 col-lg-3 col-form-label">Address</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{address}" type="text" class="form-control" id="address" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{phone}" type="text" class="form-control" id="Phone" required>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="email" type="email" class="form-control" id="Email"
+                          th:value="${profile.email}">
+                      </div>
+                    </div>
+
+                    <hr class="fas fa-divide">
+
+                    <div class="row mb-3">
+                      <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{twitter}" type="text" class="form-control" id="Twitter">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{facebook}" type="text" class="form-control" id="Facebook">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{instagram}" type="text" class="form-control" id="Instagram">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input th:field="*{linkedin}" type="text" class="form-control" id="Linkedin">
+                      </div>
+                    </div>
+
+                    <div class="text-end">
+                      <button type="reset" class="btn btn-warning">Clear Changes</button>
+                      <button type="submit" class="btn btn-primary">Save Profile</button>
+                    </div>
+                  </form><!-- End Profile Edit Form -->
+
+                </div>
+
+                <div class="tab-pane fade pt-3" id="profile-change-password">
+                  <!-- Change Password Form -->
+                  <form th:action="@{/reset}" method="post">
+
+                    <div class="row mb-3">
+                      <div class="col-md-8 col-lg-9 input-group">
+                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                        <input th:value="${author.password}" type="password" class="form-control" id="currentPassword"
+                          placeholder="Current password" readonly>
+                        <button class="input-group-text btn btn-outline-secondary" type="button"
+                          onclick="togglePassword('currentPassword', this)">
+                          <i class="bi bi-eye"></i>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-8 col-lg-9 input-group">
+                        <label for="Np" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                        <input name="NP" type="password" class="form-control" id="Np" placeholder="New password"
+                          required>
+                        <button class="input-group-text btn btn-outline-secondary" type="button"
+                          onclick="togglePassword('Np', this)">
+                          <i class="bi bi-eye"></i>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-8 col-lg-9 input-group">
+                        <label for="Password" class="col-md-4 col-lg-3 col-form-label">Confirm Password</label>
+                        <input name="password" type="password" class="form-control" id="Password"
+                          placeholder="Confirm password" required>
+                        <button class="input-group-text btn btn-outline-secondary" type="button"
+                          onclick="togglePassword('Password', this)">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                      </div>
+                    </div>
+
+
+                    <div class="text-end">
+                      <button type="reset" class="btn btn-warning">Clear Changes</button>
+                      <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                  </form><!-- End Change Password Form -->
+
+                </div>
+
+              </div><!-- End Bordered Tabs -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Modal-->
+    <div class="modal fade" id="image" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-secondary py-2">
+            <p class="mb-0">Update profile image</p>
+          </div>
+          <form class="py-2 px-4" th:action="@{/image/update/{id}(id=${profile.user})}" method="post"
+            enctype="multipart/form-data" accept="image">
+            <div class="row mb-3">
+              <label class="col-md-6 col-lg-4 col-form-label">Select image</label>
+              <div class="col-md-6 col-lg-8">
+                <input name="image" type="file" class="form-control" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-4 text-start">
+                <button class="btn btn-sm btn-danger" data-bs-dismiss="modal">close</button>
+              </div>
+              <div class="col-sm-8 text-end">
+                <button type="reset" class="btn btn-sm btn-warning">clear</button>
+                <button type="submit" class="btn btn-sm btn-primary">save</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div><!-- End Upload Modal-->
+
+    <!-- Delete Modal-->
+    <div class="modal fade" id="del" tabindex="-1">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <h1><a href="#"><i class="bi bi-info-circle text-danger"></i></a></h1>
+            Confirm to Remove image
+            <form class="py-2 px-4" th:action="@{/image/delete/{id}(id=${profile.user})}" method="post">
+              <div class="text-center">
+                <a class="btn btn-sm btn-warning" data-bs-dismiss="modal">Cancel</a>
+                <button class="btn btn-sm btn-success" type="submit">Remove</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div><!-- End Delete Modal-->
+  </main><!-- End #main -->
+
+  <!-- =====footer===== -->
+  <th:block th:insert="~{partials/_footer}" />
+</body>
+
+</html>

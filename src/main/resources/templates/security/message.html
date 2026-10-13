@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+  <!-- Custom meta data for this template-->
+  <meta name="description" content="meo home page">
+  <meta name="author" content="mfano">
+  <!-- Custom title for this page-->
+  <title>MFES | Message</title>
+  <!-- Custom styles for this page-->
+</th:block>
+
+<body>
+  <main class="container-fluid">
+    <div class="row">
+      <div class="col-lg-10 p-4">
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <a class="btn btn-primary" href="/login">Go to Login</a>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+	<!-- Custom meta data for this template-->
+	<meta name="description" content="meo home page">
+	<meta name="author" content="mfano">
+	<!-- Custom title for this page-->
+	<title>MFES | Forgot Password</title>
+	<!-- Custom styles for this page-->
+</th:block>
+
+<body>
+	<main class="login-img3-body">
+
+		<section class="section register min-vh-100 d-flex flex-column align-items-center py-4">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+						<div class="d-flex justify-content-center py-4">
+							<a href="/" class="logo d-flex align-items-center w-auto">
+								<img th:src="@{/image/mfano.png}" alt="">
+								<span class="d-none d-lg-block">mfano</span>
+							</a>
+						</div><!-- End Logo -->
+
+						<div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
+
+						<div class="card mb-3">
+							<div class="card-body">
+								<form class="row g-3 py-2 needs-validation" th:action="@{/forgot}" method="post">
+									<div class="col-12">
+										<div class="input-group">
+											<input type="text" name="email" class="form-control"
+												placeholder="Enter your Email" required>
+										</div>
+									</div>
+
+									<div class="col-12">
+										<button class="btn btn-primary w-100" type="submit">Send Reset Link</button>
+									</div>
+								</form>
+
+								<a href="/login">Back to Login</a>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+		</section>
+	</main>
+</body>
+
+</html>

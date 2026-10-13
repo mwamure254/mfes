@@ -14,9 +14,10 @@ public class AuditService {
         this.repo=repo;
      }
 
-    public void record(String action, String details) {
+    public void record(String action, String actionType, String details) {
         AuditEntry entry = new AuditEntry();
         entry.setAction(action);
+        entry.setActionType(actionType);
         entry.setDetails(details);
         repo.save(entry);
     }

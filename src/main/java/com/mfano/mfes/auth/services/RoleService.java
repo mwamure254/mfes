@@ -13,8 +13,8 @@ import com.mfano.mfes.auth.repositories.RoleRepository;
 public class RoleService {
     private final RoleRepository roleRepository;
 
-    public RoleService(RoleRepository roleRepository){
-        this.roleRepository=roleRepository;
+    public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
     // Get All Roles
@@ -28,13 +28,28 @@ public class RoleService {
     }
 
     // Delete Role
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         roleRepository.deleteById(id);
+    }
+
+    public void toggleActive(Long id) {
+        Role existing = findById(id);
+        existing.setActive(!Boolean.TRUE.equals(existing.isActive()));
+        save(existing);
     }
 
     // Update Role
     public void save(Role role) {
         roleRepository.save(role);
+    }
+
+    public void update(Long id, Role role) {
+        Role existing = findById(id);
+
+        existing.setName(role.getName());
+        existing.setDescription(role.getDescription());
+
+        save(existing);
     }
 
     public List<Role> getUserNotRoles(User user) {
@@ -44,6 +59,7 @@ public class RoleService {
     public Set<Role> getUserRoles(User user) {
         return user.getRoles();
     }
+
     public Role findByName(String name) {
         return roleRepository.findByName(name).orElse(null);
     }

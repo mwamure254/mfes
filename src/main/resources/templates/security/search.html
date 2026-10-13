@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <!-- Custom meta data for this template-->
+    <meta name="description" content="mpos search results page">
+    <meta name="author" content="mfano">
+    <!-- Custom title for this page-->
+    <title>MFES | Search Results</title>
+    <!-- Custom styles for this page-->
+</th:block>
+
+<body>
+
+    <!-- ======= Header ======= -->
+    <th:block th:insert="~{partials/_topbar}" />
+    <!-- =====End Header===== -->
+
+    <!-- ======= Sidebar ======= -->
+    <th:block th:insert="~{partials/_sidebar}" />
+    <!-- =====End Sidebar=====-->
+
+
+
+    <main id="main" class="main">
+
+        <!-- Page Header -->
+        <div class="pagetitle">
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-search me-2"></i>Search Results
+            </h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">Search</li>
+                </ol>
+            </nav>
+        </div>
+
+        <section class="section dashboard">
+
+            <!-- Search Form -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <form method="GET" th:action="@{/search}" class="row g-2">
+
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-search"></i>
+                                </span>
+
+                                <input type="text" class="form-control" name="query" th:value="${query}"
+                                    placeholder="Search products, users, orders, stores..." minlength="2" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="bi bi-search me-1"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Search Results</h5>
+                    <small class="text-muted">
+                        Showing matches for
+                        <strong th:text="${query}">keyword</strong>
+                    </small>
+                </div>
+
+                <span class="badge bg-primary rounded-pill px-3 py-2" th:text="${#lists.size(results)} + ' results'">
+                    0 results
+                </span>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(results)}" class="card border-0 shadow-sm">
+
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                    </div>
+
+                    <h5 class="fw-bold">No results found</h5>
+
+                    <p class="text-muted mb-3">
+                        We couldn't find any records matching
+                        <strong th:text="${query}">your search</strong>.
+                    </p>
+
+                    <p class="small text-muted mb-0">
+                        Check your spelling or try another keyword.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div th:unless="${#lists.isEmpty(results)}" class="card border-0 shadow-sm">
+
+                <div class="list-group list-group-flush">
+
+                    <a th:each="result : ${results}" th:href="${result.url}"
+                        class="list-group-item list-group-item-action p-3">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <!-- Icon -->
+                            <div class="rounded-circle bg-light d-flex
+                                    align-items-center justify-content-center
+                                    flex-shrink-0" style="width: 46px; height: 46px;">
+
+                                <i class="bi fs-4" th:classappend="${result.type == 'Product' ? ' bi-box-seam text-primary' :
+                                                result.type == 'User' ? ' bi-person text-success' :
+                                                result.type == 'Store' ? ' bi-shop text-warning' :
+                                                result.type == 'Order' ? ' bi-receipt text-info' :
+                                                result.type == 'Transfer' ? ' bi-arrow-left-right text-danger' :
+                                                ' bi-file-earmark-text text-secondary'}">
+                                </i>
+                            </div>
+
+                            <!-- Result Details -->
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h6 class="fw-bold mb-1" th:text="${result.title}">
+                                    Result title
+                                </h6>
+
+                                <small class="text-muted" th:text="${result.description}">
+                                    Result description
+                                </small>
+                            </div>
+
+                            <!-- Type and Arrow -->
+                            <div class="text-end flex-shrink-0">
+                                <span class="badge bg-light text-dark border" th:text="${result.type}">
+                                    Type
+                                </span>
+
+                                <div class="mt-2 text-muted">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </div>
+                            </div>
+
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =====footer===== -->
+    <th:block th:insert="~{partials/_footer}" />
+</body>
+
+</html>

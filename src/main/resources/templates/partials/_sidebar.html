@@ -1,167 +1,157 @@
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
-  <ul class="nav">
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <!-- Dashboard -->
     <li class="nav-item">
-      <a class="nav-link" href="/">
-        <span class="icon-bg"><i class="mdi mdi-cube menu-icon"></i></span>
-        <span class="menu-title">Overview</span>
+      <a class="nav-link" th:href="@{/}">
+        <i class="bi bi-grid"></i>
+        <span>Overview</span>
       </a>
     </li>
 
+    <!-- ADMINISTRATION -->
     <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#ui-admin" aria-expanded="false" aria-controls="ui-basic">
-        <span class="icon-bg"><i class="mdi mdi-crosshairs-gps menu-icon"></i></span>
-        <span class="menu-title">Admin</span>
-        <i class="menu-arrow"></i>
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#adminMenu" aria-expanded="false"
+        aria-controls="adminMenu">
+        <i class="bi bi-shield-lock"></i>
+        <span>Admin</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <div class="collapse" id="ui-admin">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Home</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Users</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Roles</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Permisions</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Analytics</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Reports</a></li>
-        </ul>
-      </div>
+      <ul id="adminMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a th:href="@{/admin/users}">
+            <i class="bi bi-people"></i><span>Users</span>
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/admin/roles}">
+            <i class="bi bi-key"></i><span>Roles & Permissions</span>
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/admin/branches}">
+            <i class="bi bi-diagram-3"></i><span>Branches</span>
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/admin/audit}">
+            <i class="bi bi-journal-text"></i><span>Audit Log</span>
+          </a>
+        </li>
+      </ul>
     </li>
 
-    <!--Executive-->
+    <!-- EXECUTIVE -->
     <li class="nav-item">
-      <a class="nav-link" href="pages/tables/basic-table.html">
-        <span class="icon-bg"><i class="mdi mdi-briefcase-account menu-icon"></i></span>
-        <span class="menu-title">Executive</span>
-      </a>
-    </li>
-    <!-- Manager -->
-    <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#ui-manager" aria-expanded="false" aria-controls="ui-basic">
-        <span class="icon-bg">
-          <i class="mdi mdi-account-tie menu-icon"></i></span>
-        <span class="menu-title">Manager</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="ui-manager">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Home</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Staff</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Loans</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Clients</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Groups</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Leave</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Portfolio</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Analytics</a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Reports</a></li>
-        </ul>
-      </div>
-    </li>
-    <!--Procurement-->
-    <li class="nav-item">
-      <a class="nav-link" href="pages/forms/basic_elements.html">
-        <span class="icon-bg"><i class="mdi mdi-format-list-bulleted menu-icon"></i></span>
-        <span class="menu-title">Inventory</span>
-      </a>
-    </li>
-    <!-- Branches -->
-    <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#ui-branch" aria-expanded="false" aria-controls="auth">
-        <span class="icon-bg">
-          <i class="mdi mdi-source-branch menu-icon"></i></span>
-        <span class="menu-title">Branch</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="ui-branch">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Home </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Staff </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Portfolio </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Groups </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Loans </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Repayments </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Analytics </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Reports </a></li>
-        </ul>
-      </div>
-    </li>
-    <!-- Business -->
-    <li class="nav-item">
-      <a class="nav-link" href="pages/forms/basic_elements.html">
-        <span class="icon-bg">
-          <i class="mdi mdi-domain menu-icon"></i></span>
-        <span class="menu-title">Business</span>
-      </a>
-    </li>
-    <!-- Portfolio -->
-    <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-        <span class="icon-bg">
-          <i class="mdi mdi-chart-pie menu-icon"></i></span>
-        <span class="menu-title">Portfolio</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="auth">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Home </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Groups </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Loans </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Analytics </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Reports </a></li>
-        </ul>
-      </div>
-    </li>
-    <!-- Products -->
-    <li class="nav-item">
-      <a class="nav-link" href="pages/forms/basic_elements.html">
-        <span class="icon-bg">
-          <i class="mdi mdi-package-variant-closed menu-icon"></i></span>
-        <span class="menu-title">Products</span>
-      </a>
-    </li>
-    <!-- Loans -->
-    <li class="nav-item">
-      <a class="nav-link" data-toggle="collapse" href="#ui-loan" aria-expanded="false" aria-controls="auth">
-        <span class="icon-bg">
-          <i class="mdi mdi-cash-multiple menu-icon"></i></span>
-        <span class="menu-title">Loans</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="ui-loan">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Home </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Applications </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Repayments </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Analytics </a></li>
-          <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Reports </a></li>
-        </ul>
-      </div>
-    </li>
-    <!-- Clients -->
-    <li class="nav-item">
-      <a class="nav-link" href="pages/tables/basic-table.html">
-        <span class="icon-bg">
-          <i class="mdi mdi-account-group menu-icon"></i></span>
-        <span class="menu-title">Clients</span>
+      <a class="nav-link collapsed" th:href="@{/executive/dashboard}">
+        <i class="bi bi-briefcase"></i>
+        <span>Executive</span>
+        <span class="badge bg-danger ms-auto">NEW</span>
       </a>
     </li>
 
-    <li class="nav-item sidebar-user-actions">
-      <div class="sidebar-user-menu">
-        <a href="#" class="nav-link"><i class="mdi mdi-settings menu-icon"></i>
-          <span class="menu-title">Settings</span>
-        </a>
-      </div>
+    <!-- CLIENTS -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" th:href="@{/clients}">
+        <i class="bi bi-person-lines-fill"></i>
+        <span>Clients</span>
+      </a>
     </li>
-    <li class="nav-item sidebar-user-actions">
-      <div class="sidebar-user-menu">
-        <a href="#" class="nav-link"><i class="mdi mdi-speedometer menu-icon"></i>
-          <span class="menu-title">Take Tour</span></a>
-      </div>
+    <li class="nav-item">
+      <a class="nav-link collapsed" th:href="@{/groups}">
+        <i class="bi bi-people-fill"></i>
+        <span>Groups</span>
+      </a>
     </li>
-    <li class="nav-item sidebar-user-actions">
-      <div class="sidebar-user-menu">
-        <a href="#" class="nav-link" data-toggle="modal" data-target="#logoutModal">
-          <i class="mdi mdi-logout menu-icon"></i>
-          <span class="menu-title">Log Out</span></a>
-      </div>
+
+    <li class="nav-item"><a class="nav-link collapsed" th:href="@{/loans/products}"><i
+          class="bi bi-box"></i><span>Products</span></a></li>
+    <li class="nav-item"><a class="nav-link collapsed" th:href="@{/branch/staff}"><i
+          class="bi bi-person-badge"></i><span>Staff</span></a></li>
+
+    <!-- BUSINESS -->
+    <li class="nav-heading">Business</li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#loanMenu" aria-expanded="false"
+        aria-controls="loanMenu">
+        <i class="bi bi-cash-stack"></i>
+        <span>Loans</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="loanMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a th:href="@{/loans/applications}">
+            <i class="bi bi-file-earmark-text"></i><span>Applications</span>
+            <span class="badge bg-warning ms-auto">12</span>
+          </a>
+        </li>
+        <li><a th:href="@{/loans/approvals}"><i class="bi bi-check2-circle"></i><span>Approvals</span></a></li>
+        <li><a th:href="@{/loans/disbursements}"><i class="bi bi-send"></i><span>Disbursements</span></a></li>
+        <li><a th:href="@{/loans/repayments}"><i class="bi bi-arrow-repeat"></i><span>Repayments</span></a></li>
+        <li>
+          <a th:href="@{/loans/arrears}">
+            <i class="bi bi-exclamation-triangle"></i><span>Overdue</span>
+            <span class="badge bg-danger ms-auto">5</span>
+          </a>
+        </li>
+      </ul>
     </li>
+
+    <!-- BRANCH OPERATIONS -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#branchMenu" aria-expanded="false"
+        aria-controls="branchMenu">
+        <i class="bi bi-building"></i>
+        <span>Operations</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="branchMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li><a th:href="@{/branch/portfolio}"><i class="bi bi-folder2-open"></i><span>Portfolios</span></a></li>
+        <li><a th:href="@{/branch/repayments}"><i class="bi bi-wallet2"></i><span>Collections</span></a></li>
+        <li><a th:href="@{/branch/analytics}"><i class="bi bi-bar-chart"></i><span>Analytics</span></a></li>
+      </ul>
+    </li>
+
+    <!-- INVENTORY -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" th:href="@{/inventory}">
+        <i class="bi bi-box-seam"></i>
+        <span>Inventory</span>
+      </a>
+    </li>
+
+    <!-- PORTFOLIO -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#portfolioMenu" aria-expanded="false"
+        aria-controls="portfolioMenu">
+        <i class="bi bi-pie-chart"></i>
+        <span>Portfolio</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="portfolioMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li><a th:href="@{/portfolio/analytics}"><i class="bi bi-activity"></i><span>Analytics</span></a></li>
+        <li><a th:href="@{/reports/collections}"><i class="bi bi-cash-coin"></i><span>Collections</span></a></li>
+        <li><a th:href="@{/reports/arrears}"><i class="bi bi-hourglass-split"></i><span>Arrears</span></a></li>
+      </ul>
+    </li>
+
+    <!-- SYSTEM -->
+    <li class="nav-heading">System</li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" th:href="@{/settings}">
+        <i class="bi bi-gear"></i>
+        <span>Settings</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#" data-bs-toggle="modal" data-bs-target="#logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Log Out</span>
+      </a>
+    </li>
+
   </ul>
-</nav>
+
+</aside><!-- End Sidebar-->

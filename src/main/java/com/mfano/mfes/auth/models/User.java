@@ -34,6 +34,7 @@ public class User extends BaseObject {
     
     @Column(unique = true)
     private String gender;
+    private String image;
 
     private String password;
     @Column(nullable = false)

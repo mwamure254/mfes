@@ -8,4 +8,6 @@ import com.mfano.mfes.auth.models.Branch;
 public interface BranchRepository extends JpaRepository<Branch, Long> {
 
     Branch findByName(String name);
+
+    Branch findByCode(String code);
 }

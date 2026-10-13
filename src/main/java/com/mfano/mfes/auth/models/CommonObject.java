@@ -15,7 +15,6 @@ import jakarta.persistence.PreUpdate;
 import lombok.Data;
 
 import com.mfano.mfes.config.CustomUserDetails;
-import com.mfano.mfes.auth.models.User;
 
 @Data
 @MappedSuperclass
@@ -26,6 +25,9 @@ public abstract class CommonObject {
     private Long id;
 
     private String createdBy;
+
+    @Column(nullable = false)
+    protected boolean active;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
@@ -43,6 +45,7 @@ public abstract class CommonObject {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = createdAt;
+        this.active = true;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

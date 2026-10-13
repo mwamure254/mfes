@@ -44,6 +44,10 @@ public class AuthHandler implements AuthenticationSuccessHandler,
         // log activity info
         if (authentication != null &&
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
+
+        auditService.record(
+                "user_login", "SUCCESS",
+                "User " + user.getEmail() + " logged in successfully.");
             response.sendRedirect("/");
             return;
         }
@@ -56,28 +60,37 @@ public class AuthHandler implements AuthenticationSuccessHandler,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
 
+        // Capture the email submitted on the login form
+        String email = request.getParameter("username");
+
+        // If your login form uses name="email", use:
+        // String email = request.getParameter("email");
+        if (email == null || email.isBlank()) {
+            email = "UNKNOWN";
+        }
+        
         if (exception instanceof DisabledException) {
-            message = "Your account is disabled";
+            message = " account is disabled";
 
             response.sendRedirect(
                     msg(message));
-            return;
         } else if (exception instanceof LockedException) {
-            message = "Your account is locked";
+            message = " account is locked";
             response.sendRedirect(
                     msg(message));
-            return;
         } else if (exception instanceof CredentialsExpiredException) {
-            message = "Your password has expired";
+            message = " password has expired";
             response.sendRedirect(
                     msg(message));
-            return;
         } else {
             message = "Invalid user, check your credentials and try again.";
             response.sendRedirect(
                     msg(message));
-            return;
         }
+
+        auditService.record(
+                "USER_LOGIN", "FAIL",
+                "User " + email + message);
     }
 
     @Override
@@ -89,8 +102,8 @@ public class AuthHandler implements AuthenticationSuccessHandler,
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
 
             auditService.record(
-                    "user_logout",
-                    "User " + user.getUsername() + " logged out");
+                    "user_logout", "SUCCESS",
+                    "User " + user.getEmail() + " logged out");
         }
     }
 }

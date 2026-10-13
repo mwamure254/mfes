@@ -35,58 +35,47 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
 
-                // Public pages
-                .requestMatchers(
-                    "/",
-                    "/landing",
-                    "/error/**",
-                    "/login",
-                    "/css/**",
-                    "/js/**",
-                    "/fonts/**",
-                    "/scss/**",
-                    "/vendors/**",
-                    "/images/**"
-                ).permitAll()
+                        // Public pages
 
-                // Protected pages
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/manager/**").hasRole("MANAGER")
-                .requestMatchers("/business/**").hasRole("BDO")
-                .requestMatchers("/procurement/**").hasRole("PO")
-                .requestMatchers("/executive/**").hasRole("CEO")
-                .anyRequest().authenticated()
-            )
+                        .requestMatchers("/", "/register", "/login", "/verify", "/forgot", "/reset-password",
+                                "/resend", "/error/403", "/profile", "/css/**", "/js/**", "/vendor/**",
+                                "/image/**")
+                        .permitAll()
 
-            // 403 Access Denied
-            .exceptionHandling(exception -> exception
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.sendRedirect("/error/403");
-                })
-            )
+                        // Protected pages
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/business/**").hasRole("BDO")
+                        .requestMatchers("/procurement/**").hasRole("PO")
+                        .requestMatchers("/executive/**").hasRole("CEO")
+                        .anyRequest().authenticated())
 
-            // Login
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .successHandler(auth)
-                .failureHandler(auth)
-                .permitAll()
-            )
+                // 403 Access Denied
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/error/403");
+                        }))
 
-            // Logout
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .addLogoutHandler(auth)
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            );
+                // Login
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(auth)
+                        .failureHandler(auth)
+                        .permitAll())
+
+                // Logout
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler(auth)
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll());
 
         return http.build();
     }
@@ -121,7 +110,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        Path profilePath = Paths.get(uploadDir, "images", "profile")
+        Path profilePath = Paths.get(uploadDir, "profiles")
                 .toAbsolutePath()
                 .normalize();
 
@@ -129,7 +118,12 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .toAbsolutePath()
                 .normalize();
 
-        registry.addResourceHandler("/images/profile/**", "/documents/**")
-                .addResourceLocations(profilePath.toUri().toString(), documentPath.toUri().toString());
+        Path productPath = Paths.get(uploadDir, "products")
+                .toAbsolutePath()
+                .normalize();
+
+        registry.addResourceHandler("/profiles/**", "/documents/**", "/products/**")
+                .addResourceLocations(profilePath.toUri().toString(), documentPath.toUri().toString(),
+                        productPath.toUri().toString());
     }
 }
