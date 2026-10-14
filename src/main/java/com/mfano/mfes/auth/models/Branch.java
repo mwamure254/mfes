@@ -18,6 +18,4 @@ public class Branch extends CommonObject {
     private String phone;
     private String contact;  
     private String email;
-    private String address;
-    private String createdBy;
 }

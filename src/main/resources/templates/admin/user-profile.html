@@ -21,14 +21,32 @@
   <!-- =====End Sidebar=====-->
 
   <main id="main" class="main">
+    <!-- Page Heading -->
+    <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h1 class="h3 mb-1">
+          <i class="bi bi-person me-2 text-primary"></i>
 
-    <div class="pagetitle my-4">
-      <h3>Profile</h3>
-      <nav class="bg-dark">
+          Profile
+        </h1>
+        <p class="mb-0 text-muted small">
+          Review and edit personal information.
+        </p>
+      </div>
+
+      <!-- Breadcrumb -->
+      <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/"><i class="bi bi-house-door"></i>
-              <span>Home</span></a></li>
-          <li class="breadcrumb-item active"><i class="bi bi-record-fill"></i>Profile</li>
+          <li class="breadcrumb-item">
+            <a th:href="@{/admin/dashboard}">
+              <i class="bi bi-house-door me-1"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="breadcrumb-item">
+            <a th:href="@{/admin/users}">Users</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Profile</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -40,9 +58,9 @@
           <div class="card">
             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-              <img th:src="${profile1.image == null or profile1.image.isEmpty()}
-        ? @{/image/profile-img.jpg}
-        : @{/profiles/{filename}(filename=${profile1.image})}" alt="Profile" class="rounded-circle" height="120"
+              <img th:src="${user.image == null or user.image.isEmpty()}
+        ? @{/image/rocket.svg}
+        : @{/profiles/{filename}(filename=${user.image})}" alt="Profile" class="rounded-circle" height="150"
                 width="120">
 
               <div class="pt-2">
@@ -52,7 +70,7 @@
                   title="Remove my profile image"><i class="bi bi-trash"></i></a>
               </div>
 
-              <h2 th:text="${profile1.fin + ' ' + profile1.lan}">First Last</h2>
+              <h2 th:text="${user.fin + ' ' + user.lan}">First Last</h2>
               <h3 th:text="${profile1.designation}">Your Designation</h3>
               <div class="social-links mt-2">
                 <a th:href="${#strings.isEmpty(profile1.twitter)} ? '#' : ${profile1.twitter}" class="twitter"><i
@@ -156,7 +174,8 @@
                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                   <!-- Profile Edit Form -->
-                  <form th:action="@{/admin/profile/update/{id}(id=${profile1.id})}" method="post" th:object="${profile1}">
+                  <form th:action="@{/admin/profile/update/{id}(id=${profile1.id})}" method="post"
+                    th:object="${profile1}">
                     <div class="row mb-3">
                       <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
                       <div class="col-md-8 col-lg-9">
@@ -190,7 +209,7 @@
                       <label for="Gender" class="col-md-4 col-lg-3 col-form-label">Gender</label>
                       <div class="col-md-8 col-lg-9">
                         <select th:field="*{gender}" class="form-select" id="Gender" required>
-                          <option value="">Select gender</option>
+                          <option value="" disabled>SELECT</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
                         </select>
@@ -247,8 +266,7 @@
                     <div class="row mb-3">
                       <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="email" type="email" class="form-control" id="Email"
-                          th:field="*{email}">
+                        <input name="email" type="email" class="form-control" id="Email" th:field="*{email}">
                       </div>
                     </div>
 

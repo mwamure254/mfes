@@ -76,14 +76,14 @@ public class AuthController {
         // Redirect based on role priority
         if (roles.contains("ROLE_ADMIN")) {
             return "redirect:/admin/dashboard";
-        } else if (roles.contains("ROLE_MANAGER")) {
-            return "redirect:/manager/dashboard";
-        } else if (roles.contains("ROLE_BDO")) {
-            return "redirect:/business/dashboard";
-        } else if (roles.contains("ROLE_PO")) {
-            return "redirect:/procurement/dashboard";
         } else if (roles.contains("CEO")) {
             return "redirect:/executive/dashboard";
+        } else if (roles.contains("ROLE_MANAGER")) {
+            return "redirect:/manager/dashboard";
+        } else if (roles.contains("ROLE_PO")) {
+            return "redirect:/inventory/dashboard";
+        } else if (roles.contains("ROLE_BDO")) {
+            return "redirect:/business/dashboard";
         } else {
             model.addFlashAttribute("error", "Please contact the system admin for role mapping.");
             return login;
@@ -125,15 +125,40 @@ public class AuthController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/contact")
+    public String contact(Model model,
+            @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, model);
+
+        return "security/contact";
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")
-    public String userProfile(@AuthenticationPrincipal CustomUserDetails auth, Model model) {
-        if (auth == null) {
-            model.addAttribute("error", "User not authenticated, login to proceed.");
-            return login;
-        }
+    public String profile(Model model,
+            @AuthenticationPrincipal CustomUserDetails auth) {
         userService.getPrices(auth, model);
 
         return "security/profile";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/search")
+    public String search(
+            @RequestParam(defaultValue = "") String query, Model model,
+            @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, model);
+        model.addAttribute("query", query);
+        // Uncomment when your search service is ready
+        // model.addAttribute("results", searchService.search(query));
+
+        return "security/search";
+    }
+
+    @GetMapping("/logout")
+    public String logout(RedirectAttributes model) {
+        model.addFlashAttribute("message", "You have been logged out successfully");
+        return "redirect:/login?logout";
     }
 
     // profile/update @PreAuthorize("isAuthenticated()")
@@ -174,23 +199,6 @@ public class AuthController {
         auditService.record("delete_image", "SUCCESS", "user id=" + userid + "Deleted their profile image");
         red.addFlashAttribute("message", "Image deleted successfully.");
         return "redirect:/profile";
-    }
-
-    @GetMapping("/logout")
-    public String logout(RedirectAttributes model) {
-        model.addFlashAttribute("message", "You have been logged out successfully");
-        return "redirect:/login?logout";
-    }
-
-    @GetMapping("/search")
-    public String search(
-            @RequestParam(defaultValue = "") String query,
-            @AuthenticationPrincipal CustomUserDetails auth, Model model) {
-        userService.getPrices(auth, model);
-        model.addAttribute("query", query);
-        //model.addAttribute("results", searchService.search(query));
-
-        return "security/search";
     }
 
     @GetMapping("/verify")

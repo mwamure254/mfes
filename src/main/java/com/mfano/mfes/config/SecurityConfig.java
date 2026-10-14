@@ -22,108 +22,111 @@ import com.mfano.mfes.auth.services.CustomDetailService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig implements WebMvcConfigurer {
-    private final CustomDetailService customDetailService;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthHandler auth;
+        private final CustomDetailService customDetailService;
+        private final PasswordEncoder passwordEncoder;
+        private final AuthHandler auth;
 
-    public SecurityConfig(CustomDetailService customDetailService, PasswordEncoder passwordEncoder, AuthHandler auth) {
-        this.customDetailService = customDetailService;
-        this.passwordEncoder = passwordEncoder;
-        this.auth = auth;
-    }
+        public SecurityConfig(CustomDetailService customDetailService, PasswordEncoder passwordEncoder,
+                        AuthHandler auth) {
+                this.customDetailService = customDetailService;
+                this.passwordEncoder = passwordEncoder;
+                this.auth = auth;
+        }
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
+        @Bean
+        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .authorizeHttpRequests(auth -> auth
 
-                        // Public pages
+                                                // Public pages
 
-                        .requestMatchers("/", "/register", "/login", "/verify", "/forgot", "/reset-password",
-                                "/resend", "/error/403", "/profile", "/css/**", "/js/**", "/vendor/**",
-                                "/image/**")
-                        .permitAll()
+                                                .requestMatchers("/", "/register", "/login", "/verify", "/forgot",
+                                                                "/reset-password",
+                                                                "/resend", "/error/403", "/profile", "/css/**",
+                                                                "/js/**", "/vendor/**",
+                                                                "/image/**")
+                                                .permitAll()
 
-                        // Protected pages
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/business/**").hasRole("BDO")
-                        .requestMatchers("/procurement/**").hasRole("PO")
-                        .requestMatchers("/executive/**").hasRole("CEO")
-                        .anyRequest().authenticated())
+                                                // Protected pages
+                                                .requestMatchers("/admin/**").hasAnyRole("ADMIN","CEO")
+                                                .requestMatchers("/manager/**").hasAnyRole("MANAGER","CEO")
+                                                .requestMatchers("/business/**").hasAnyRole("BDO","CEO")
+                                                .requestMatchers("/inventory/**").hasAnyRole("PO","CEO")
+                                                .requestMatchers("/executive/**").hasRole("CEO")
+                                                .anyRequest().authenticated())
 
-                // 403 Access Denied
-                .exceptionHandling(exception -> exception
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/error/403");
-                        }))
+                                // 403 Access Denied
+                                .exceptionHandling(exception -> exception
+                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                        response.sendRedirect("/error/403");
+                                                }))
 
-                // Login
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .successHandler(auth)
-                        .failureHandler(auth)
-                        .permitAll())
+                                // Login
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .successHandler(auth)
+                                                .failureHandler(auth)
+                                                .permitAll())
 
-                // Logout
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .addLogoutHandler(auth)
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll());
+                                // Logout
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .addLogoutHandler(auth)
+                                                .invalidateHttpSession(true)
+                                                .clearAuthentication(true)
+                                                .deleteCookies("JSESSIONID")
+                                                .logoutSuccessUrl("/login?logout")
+                                                .permitAll());
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    // =====================================================
-    // AUTHENTICATION PROVIDER
-    // =====================================================
-    @Bean
-    AuthenticationProvider authenticationProvider() {
+        // =====================================================
+        // AUTHENTICATION PROVIDER
+        // =====================================================
+        @Bean
+        AuthenticationProvider authenticationProvider() {
 
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customDetailService);
+                DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customDetailService);
 
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
+                provider.setPasswordEncoder(passwordEncoder);
+                return provider;
+        }
 
-    // =====================================================
-    // AUTHENTICATION MANAGER
-    // =====================================================
-    @Bean
-    AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration)
-            throws Exception {
+        // =====================================================
+        // AUTHENTICATION MANAGER
+        // =====================================================
+        @Bean
+        AuthenticationManager authenticationManager(
+                        AuthenticationConfiguration configuration)
+                        throws Exception {
 
-        return configuration.getAuthenticationManager();
-    }
+                return configuration.getAuthenticationManager();
+        }
 
-    // IMAGE ROUTE
-    @Value("${app.upload-dir}")
-    private String uploadDir;
+        // IMAGE ROUTE
+        @Value("${app.upload-dir}")
+        private String uploadDir;
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        Path profilePath = Paths.get(uploadDir, "profiles")
-                .toAbsolutePath()
-                .normalize();
+                Path profilePath = Paths.get(uploadDir, "profiles")
+                                .toAbsolutePath()
+                                .normalize();
 
-        Path documentPath = Paths.get(uploadDir, "documents")
-                .toAbsolutePath()
-                .normalize();
+                Path documentPath = Paths.get(uploadDir, "documents")
+                                .toAbsolutePath()
+                                .normalize();
 
-        Path productPath = Paths.get(uploadDir, "products")
-                .toAbsolutePath()
-                .normalize();
+                Path productPath = Paths.get(uploadDir, "products")
+                                .toAbsolutePath()
+                                .normalize();
 
-        registry.addResourceHandler("/profiles/**", "/documents/**", "/products/**")
-                .addResourceLocations(profilePath.toUri().toString(), documentPath.toUri().toString(),
-                        productPath.toUri().toString());
-    }
+                registry.addResourceHandler("/profiles/**", "/documents/**", "/products/**")
+                                .addResourceLocations(profilePath.toUri().toString(), documentPath.toUri().toString(),
+                                                productPath.toUri().toString());
+        }
 }

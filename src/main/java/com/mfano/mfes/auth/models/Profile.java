@@ -19,8 +19,6 @@ public class Profile extends BaseObject{
     private String SN;
     private String phone;
     private String email;
-    // TSC or PF Number
-    private String image;
     private String gender;
     // address
     private String county;

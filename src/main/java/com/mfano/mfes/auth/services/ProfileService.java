@@ -12,18 +12,22 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mfes.auth.models.Profile;
+import com.mfano.mfes.auth.models.User;
 import com.mfano.mfes.auth.repositories.ProfileRepository;
+import com.mfano.mfes.auth.repositories.UserRepository;
 
 @Service
 public class ProfileService {
     private final ProfileRepository profileRepository;
     private Profile profile, existing;
+    private final UserRepository userService;
 
     @Value("${app.upload-dir}")
     private String baseDirectory;
     // private String baseDirectory = "src/main/resources/static/image/profile/";
 
-    public ProfileService(ProfileRepository profileRepository) {
+    public ProfileService(UserRepository userService, ProfileRepository profileRepository) {
+        this.userService = userService;
         this.profileRepository = profileRepository;
     }
 
@@ -67,6 +71,7 @@ public class ProfileService {
         existing.setCounty(profile2.getCounty());
         existing.setAddress(profile2.getAddress());
         existing.setPhone(profile2.getPhone());
+        existing.setEmail(profile2.getEmail());
         existing.setTwitter(profile2.getTwitter());
         existing.setFacebook(profile2.getFacebook());
         existing.setInstagram(profile2.getInstagram());
@@ -78,7 +83,7 @@ public class ProfileService {
 
     // Update Profile Image
     public void updateProfileImage(Long userid, MultipartFile file, RedirectAttributes red) throws IOException {
-        existing = findByUser(userid);
+        User user = userService.findById(userid).orElse(null);
         try {
             Path path = Paths.get(baseDirectory, "profiles", file.getOriginalFilename())
                     .toAbsolutePath()
@@ -87,8 +92,8 @@ public class ProfileService {
             Files.write(path, file.getBytes());
 
             String img = file.getOriginalFilename();
-            existing.setImage(img);
-            save(existing);
+            user.setImage(img);
+            userService.save(user);
             red.addFlashAttribute("message", "Profile image updated successsfully");
         } catch (Exception e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -98,15 +103,15 @@ public class ProfileService {
 
     // Update Profile Image
     public void deleteProfileImage(Long userid, RedirectAttributes red) throws IOException {
-        existing = findByUser(userid);
+        User user = userService.findById(userid).orElse(null);
         try {
-            String image = existing.getImage();
+            String image = user.getImage();
             Path path = Path.of(baseDirectory, "profiles", image)
                     .toAbsolutePath()
                     .normalize();
             Files.delete(path);
-            existing.setImage(null);
-            save(existing);
+            user.setImage(null);
+            userService.save(user);
             red.addFlashAttribute("message", "Profile image deleted successfully");
         } catch (Exception e) {
             red.addFlashAttribute("error", e.getMessage());

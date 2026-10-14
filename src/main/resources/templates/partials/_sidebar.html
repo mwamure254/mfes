@@ -12,7 +12,7 @@
     </li>
 
     <!-- ADMINISTRATION -->
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#adminMenu" aria-expanded="false"
         aria-controls="adminMenu">
         <i class="bi bi-shield-lock"></i>
@@ -36,7 +36,7 @@
           </a>
         </li>
         <li>
-          <a th:href="@{/admin/audit}">
+          <a th:href="@{/admin/audits}">
             <i class="bi bi-journal-text"></i><span>Audit Log</span>
           </a>
         </li>
@@ -44,7 +44,7 @@
     </li>
 
     <!-- EXECUTIVE -->
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasRole('CEO')">
       <a class="nav-link collapsed" th:href="@{/executive/dashboard}">
         <i class="bi bi-briefcase"></i>
         <span>Executive</span>
@@ -53,27 +53,33 @@
     </li>
 
     <!-- CLIENTS -->
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasRole('MANAGER')">
       <a class="nav-link collapsed" th:href="@{/clients}">
         <i class="bi bi-person-lines-fill"></i>
         <span>Clients</span>
       </a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link collapsed" th:href="@{/groups}">
+    <li class="nav-item" sec:authorize="hasRole('MANAGER')">
+      <a class="nav-link collapsed" th:href="@{/manager/groups}">
         <i class="bi bi-people-fill"></i>
         <span>Groups</span>
       </a>
     </li>
 
-    <li class="nav-item"><a class="nav-link collapsed" th:href="@{/loans/products}"><i
-          class="bi bi-box"></i><span>Products</span></a></li>
-    <li class="nav-item"><a class="nav-link collapsed" th:href="@{/branch/staff}"><i
-          class="bi bi-person-badge"></i><span>Staff</span></a></li>
+    <li class="nav-item" sec:authorize="hasRole('PO')">
+      <a class="nav-link collapsed" th:href="@{/inventory/products}">
+        <i class="bi bi-box"></i><span>Products</span>
+      </a>
+    </li>
+    <li class="nav-item" sec:authorize="hasRole('MANAGER')">
+      <a class="nav-link collapsed" th:href="@{/manager/organization}">
+        <i class="bi bi-building"></i><span>Organization</span>
+      </a>
+    </li>
 
     <!-- BUSINESS -->
-    <li class="nav-heading">Business</li>
-    <li class="nav-item">
+    <li class="nav-heading" sec:authorize="hasAnyRole('PO', 'MANAGER')">Business</li>
+    <li class="nav-item" sec:authorize="hasAnyRole('PO', 'MANAGER')">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#loanMenu" aria-expanded="false"
         aria-controls="loanMenu">
         <i class="bi bi-cash-stack"></i>
@@ -100,10 +106,10 @@
     </li>
 
     <!-- BRANCH OPERATIONS -->
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('PO', 'MANAGER')">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#branchMenu" aria-expanded="false"
         aria-controls="branchMenu">
-        <i class="bi bi-building"></i>
+        <i class="bi bi-activity"></i>
         <span>Operations</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
@@ -114,16 +120,8 @@
       </ul>
     </li>
 
-    <!-- INVENTORY -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" th:href="@{/inventory}">
-        <i class="bi bi-box-seam"></i>
-        <span>Inventory</span>
-      </a>
-    </li>
-
     <!-- PORTFOLIO -->
-    <li class="nav-item">
+    <li class="nav-item" sec:authorize="hasAnyRole('BDO')">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#portfolioMenu" aria-expanded="false"
         aria-controls="portfolioMenu">
         <i class="bi bi-pie-chart"></i>

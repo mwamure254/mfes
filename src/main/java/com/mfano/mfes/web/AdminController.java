@@ -54,7 +54,7 @@ public class AdminController {
     public String manage(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, Model red) {
         userService.getPrices(auth, red);
 
-        String dir = "redirect";
+        String dir = "redirect:/";
         switch (option) {
             case "dashboard":
                 red.addAttribute("users", userService.findAll());
@@ -90,6 +90,11 @@ public class AdminController {
                 red.addAttribute("roles", roleService.findAll());
                 red.addAttribute("stores", storeService.findAll());
                 dir = "admin/roles";
+                break;
+
+            case "audits":
+                red.addAttribute("auditEntries", auditService.findAll());
+                dir = "admin/audits";
                 break;
         }
 
@@ -244,7 +249,7 @@ public class AdminController {
             RedirectAttributes red) {
         try {
             userService.registerUser(userDto);
-            auditService.record("CREATE_USER", "SUCCESS", auth.getEmail() + " Created user: " + userDto.getEmail());
+            auditService.record("create_user", "success", auth.getEmail() + " Created user: " + userDto.getEmail());
             red.addFlashAttribute("message", "User created successfully!");
         } catch (Exception e) {
             red.addAttribute("error", e.getMessage());
@@ -260,7 +265,7 @@ public class AdminController {
             RedirectAttributes redirectAttributes) {
 
         userService.update(id, userDto);
-        auditService.record("UPDATE_USER", "SUCCESS", auth.getEmail() + " Updated user: " + userDto.getEmail());
+        auditService.record("update_user", "SUCCESS", auth.getEmail() + " Updated user: " + userDto.getEmail());
         redirectAttributes.addFlashAttribute(
                 "message",
                 "User updated successfully.");
@@ -292,6 +297,7 @@ public class AdminController {
             case "profile":
                 // Add user info to model (for Thymeleaf dashboard pages)
                 userService.getPrices(auth, model);
+                model.addAttribute("user", user);
                 model.addAttribute("profile1", profileService.checkProfile(user.getId()));
                 dir = "admin/user-profile";
                 break;
@@ -314,7 +320,7 @@ public class AdminController {
             case "delete":
                 try {
                     userService.deleteById(id);
-                    auditService.record("delete_user", "SUCCESS", auth.getEmail() + " Deleted user id=" + id);
+                    auditService.record("delete_user", "success", auth.getEmail() + " Deleted user id=" + id);
                     red.addFlashAttribute("message", "user successfully deleted");
                     dir = "redirect:/admin/users";
                 } catch (Exception e) {
@@ -328,7 +334,7 @@ public class AdminController {
                 if (user != null) {
                     userService.toggleActive(id);
                     auditService.record("toggle_user",
-                            "SUCCESS",
+                            "success",
                             auth.getEmail() + " Toggled user: " + user.getEmail() + " to enabled=" + user.isEnabled());
                     red.addFlashAttribute("message", "Toggled user successfully");
                     dir = "redirect:/admin/users";
@@ -348,7 +354,7 @@ public class AdminController {
     public String userProfileUpdate(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long id,
             @ModelAttribute("profile") Profile profile, RedirectAttributes red) {
         profileService.update(id, profile);
-        auditService.record("update_profile", "SUCCESS", auth.getEmail() + " Updated the profile of user id = " + id);
+        auditService.record("update_profile", "success", auth.getEmail() + " Updated the profile of user id = " + id);
         red.addFlashAttribute("message", "Profile updated successfully");
         return "redirect:/admin/users";
     }
@@ -360,7 +366,7 @@ public class AdminController {
             @RequestParam("image") MultipartFile file, RedirectAttributes red) {
         try {
             profileService.updateProfileImage(user, file, red);
-            auditService.record("update_image", "SUCCESS",
+            auditService.record("update_image", "success",
                     auth.getEmail() + " Updated the profile image  of user id = " + user);
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -377,7 +383,7 @@ public class AdminController {
 
         try {
             profileService.deleteProfileImage(user, red);
-            auditService.record("delete_image", "SUCCESS",
+            auditService.record("delete_image", "success",
                     auth.getEmail() + " Deleted the profile image of user id = " + user);
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -396,7 +402,7 @@ public class AdminController {
             case "assign-role":
                 userService.assignRoleToUser(userId, roleId);
                 auditService.record("update_role",
-                        "SUCCESS", auth.getEmail() + " Assigned user id=" + userId + " role id=" + roleId);
+                        "success", auth.getEmail() + " Assigned user id=" + userId + " role id=" + roleId);
                 red.addFlashAttribute("message", "Action successful");
                 break;
 

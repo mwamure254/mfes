@@ -9,5 +9,7 @@ import com.mfano.mfes.auth.models.AuditEntry;
 public interface AuditRepository extends JpaRepository<AuditEntry, Long> {
 
     List<AuditEntry> findByAction(String action);
+
+    List<AuditEntry> findAllByOrderByCreatedAtDesc();
     
 }

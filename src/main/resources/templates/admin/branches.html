@@ -173,7 +173,7 @@
 
                                 <!--UPDATE MODAL-->
                                 <div class="modal fade" th:id="'editModal' + ${b.id}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-dialog modal-md modal-dialog-centered">
                                         <div class="modal-content">
 
                                             <form th:action="@{/admin/branches/update/{id}(id=${b.id})}" method="post">
@@ -257,7 +257,7 @@
 
     <!--ADD MODAL-->
     <div class="modal fade" id="addBranchModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
 
                 <form th:action="@{/admin/branches/save}" th:object="${branch}" method="post">

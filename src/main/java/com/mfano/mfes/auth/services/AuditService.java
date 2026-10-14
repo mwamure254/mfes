@@ -23,7 +23,7 @@ public class AuditService {
     }
 
     public List<AuditEntry> findAll() {
-        return repo.findAll();
+        return repo.findAllByOrderByCreatedAtDesc();
     }
 
     public List<AuditEntry> findByAction(String action) {

@@ -45,29 +45,21 @@ document.getElementById("tableSearch")
 
     });
 
-    // POS PRODUCT SEARCH
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('tableSearch');
-    const products = document.querySelectorAll('.product-item');
-    const noResults = document.getElementById('noProductsFound');
-
-    searchInput.addEventListener('input', function () {
-        const query = this.value.trim().toLowerCase();
-        let visibleCount = 0;
-
-        products.forEach(function (product) {
-            const name = (product.dataset.name || '').toLowerCase();
-            const sku = (product.dataset.sku || '').toLowerCase();
-
-            const matches = name.includes(query) || sku.includes(query);
-
-            product.style.display = matches ? '' : 'none';
-
-            if (matches) {
-                visibleCount++;
-            }
-        });
-
-        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
-    });
-});
+function getLocation(id) {
+    const latId = id === 'New' ? 'latNew' : 'lat' + id;
+    const lngId = id === 'New' ? 'lngNew' : 'lng' + id;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById(latId).value = pos.coords.latitude.toFixed(6);
+            document.getElementById(lngId).value = pos.coords.longitude.toFixed(6);
+            initMap(id, pos.coords.latitude, pos.coords.longitude);
+        }, () => alert("Could not get location. Please allow GPS permission."));
+    } else { alert("Geolocation not supported"); }
+}
+function initMap(id, lat, lng) {
+    const mapId = id === 'New' ? 'mapNew' : 'map' + id;
+    if (document.getElementById(mapId)._leaflet_id) return; // prevent re-init
+    const map = L.map(mapId).setView([lat, lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.marker([lat, lng]).addTo(map);
+}

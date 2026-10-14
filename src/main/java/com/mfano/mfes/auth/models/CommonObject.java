@@ -44,7 +44,6 @@ public abstract class CommonObject {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = createdAt;
         this.active = true;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
