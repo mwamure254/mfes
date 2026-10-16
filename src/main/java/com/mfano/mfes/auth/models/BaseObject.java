@@ -1,10 +1,12 @@
 package com.mfano.mfes.auth.models;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,18 +24,24 @@ public abstract class BaseObject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
     private String createdBy;
+
+    @Column(unique = true)
+    private String reference; // e.g. LN-20261016-0001
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = createdAt;
+        if (createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
 
-       Authentication auth =
-            SecurityContextHolder.getContext().getAuthentication();
+        if (reference == null) {
+            this.reference = String.valueOf(ThreadLocalRandom.current().nextLong(1_000_000_000L, 9_000_000_000L));
+        }
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
             this.createdBy = userDetails.getEmail();
@@ -42,7 +50,8 @@ public abstract class BaseObject {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        if (updatedAt == null) {
+            this.updatedAt = LocalDateTime.now();
+        }
     }
-
 }

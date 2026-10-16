@@ -44,14 +44,13 @@ public class SecurityConfig implements WebMvcConfigurer {
                                                 .requestMatchers("/", "/register", "/login", "/verify", "/forgot",
                                                                 "/reset-password",
                                                                 "/resend", "/error/403", "/profile", "/css/**",
-                                                                "/js/**", "/vendor/**",
+                                                                "/js/**", "/vendor/**", "/business/**",
                                                                 "/image/**")
                                                 .permitAll()
 
                                                 // Protected pages
                                                 .requestMatchers("/admin/**").hasAnyRole("ADMIN","CEO")
                                                 .requestMatchers("/manager/**").hasAnyRole("MANAGER","CEO")
-                                                .requestMatchers("/business/**").hasAnyRole("BDO","CEO")
                                                 .requestMatchers("/inventory/**").hasAnyRole("PO","CEO")
                                                 .requestMatchers("/executive/**").hasRole("CEO")
                                                 .anyRequest().authenticated())

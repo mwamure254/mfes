@@ -46,5 +46,4 @@ public class Group extends CommonObject {
     @JoinColumn(name = "portfolio_id")
     private Portfolio folio;
 
-    // getters setters
 }

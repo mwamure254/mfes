@@ -1,6 +1,7 @@
 package com.mfano.mfes.auth.models;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,14 +28,16 @@ public abstract class CommonObject {
     private String createdBy;
 
     @Column(nullable = false)
-    protected boolean active;
+    protected boolean active = true;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Column(unique = true, nullable = false)
     private String name;
 
+    @Column(unique = true)
+    private String reference; // e.g. LN-20261016-0001
     private String description;
 
     public void setName(String name) {
@@ -43,18 +46,26 @@ public abstract class CommonObject {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.active = true;
+        if (createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (reference == null) {
+            this.reference = String.valueOf(ThreadLocalRandom.current().nextLong(100_000L, 900_000L));
+        }
+        if (createdBy == null) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
-            this.createdBy = userDetails.getEmail();
+            if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
+                this.createdBy = userDetails.getEmail();
+            }
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        if (updatedAt == null) {
+            this.updatedAt = LocalDateTime.now();
+        }
     }
 }

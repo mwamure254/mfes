@@ -46,21 +46,21 @@
                             <thead class="table-light sticky-top">
                                 <tr>
                                     <th>#</th>
-                                    <th>Full Name</th>
+                                    <th>Client Name</th>
                                     <th>ID/Passport</th>
                                     <th>Group</th>
                                     <th>Branch</th>
                                     <th>Phone</th>
                                     <th>Location</th>
                                     <th>Status</th>
-                                    <th sec:authorize="hasAnyRole('MANAGER', 'ADMIN')" class="text-end">Actions</th>
+                                    <th sec:authorize="hasAnyRole('MANAGER')" class="text-end">Actions</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr th:each="c, stat : ${clients}" th:id="'c-' + ${c.id}">
                                     <td th:text="${stat.count}">1</td>
-                                    <td class="fw-bold" th:text="${c.fin + ' + c.lan}">John Doe</td>
+                                    <td class="fw-bold" th:text="${c.fin + ' ' + c.lan}">John Doe</td>
                                     <td th:text="${c.idNumber}">12345678</td>
                                     <td th:text="${c.group != null ? c.group.name : 'No Group'}"></td>
                                     <td th:text="${c.branch != null ? c.branch.name : 'No Branch'}"></td>
@@ -90,7 +90,7 @@
                                     </td>
 
                                     <!-- ACTIONS -->
-                                    <td class="text-end" sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                                    <td class="text-end" sec:authorize="hasAnyRole('MANAGER')">
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
                                                 data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${c.id}">
@@ -110,9 +110,9 @@
                                         <!-- DELETE MODAL -->
                                         <div class="modal fade" th:id="'deleteModal' + ${c.id}" tabindex="-1">
                                             <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
+                                                <div class="modal-content text-start">
                                                     <div class="modal-header"><h5 class="modal-title">Delete Client</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                                                    <div class="modal-body">Delete <strong th:text="${c.fin + ' + c.lan}"></strong>? <br><small class="text-danger">This cannot be undone.</small></div>
+                                                    <div class="modal-body">Delete <strong th:text="${c.fin + ' ' + c.lan}"></strong>? <br><small class="text-danger">This cannot be undone.</small></div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                         <form th:action="@{/manager/clients/delete/{id}(id=${c.id})}" method="post">
@@ -126,7 +126,7 @@
 
                                     <!-- EDIT CLIENT MODAL -->
                                     <div class="modal fade" th:id="'editModal' + ${c.id}" tabindex="-1">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-dialog modal-md modal-dialog-centered">
                                             <div class="modal-content">
                                                 <form th:action="@{/manager/clients/update/{id}(id=${c.id})}" method="post">
                                                     <div class="modal-header">
@@ -176,7 +176,7 @@
                                                                 <input type="number" step="any" name="longitude" th:id="'lng' + ${c.id}" class="form-control" th:value="${c.longitude}" placeholder="40.1167">
                                                             </div>
                                                             <div class="col-md-2 d-flex align-items-end">
-                                                                <button type="button" class="btn btn-outline-primary w-100" th:onclick="'getLocation(\'' + ${c.id} + '\')'"><i class="bi bi-crosshair"></i></button>
+                                                                <button type="button" class="btn btn-outline-primary w-100" th:onclick="'getLocation(\'' + ${c.id} + '\')'"><i class="bi bi-crosshair"></i>GPS</button>
                                                             </div>
                                                             <div class="col-12">
                                                                 <div th:id="'map' + ${c.id}" style="height: 200px; border-radius: 8px;"></div>
@@ -207,7 +207,7 @@
 
                 <!-- ADD CLIENT MODAL -->
                 <div class="modal fade" id="addModal" tabindex="-1">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-dialog modal-md modal-dialog-centered">
                         <div class="modal-content">
                             <form th:action="@{/manager/clients/save}" method="post">
                                 <div class="modal-header">
@@ -222,14 +222,14 @@
                                         <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control"></div>
                                         <div class="col-md-6">
                                             <label class="form-label">Group</label>
-                                            <select class="form-select" name="groupId">
+                                            <select class="form-select" name="group">
                                                 <option value="">SELECT</option>
                                                 <option th:each="gr : ${groups}" th:value="${gr.id}" th:text="${gr.name}"></option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Branch</label>
-                                            <select class="form-select" name="branchId" required>
+                                            <select class="form-select" name="branch" required>
                                                 <option value="">SELECT</option>
                                                 <option th:each="b : ${branches}" th:value="${b.id}" th:text="${b.name}"></option>
                                             </select>

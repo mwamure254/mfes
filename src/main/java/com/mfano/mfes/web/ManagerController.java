@@ -4,7 +4,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,12 +11,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mfes.auth.services.AuditService;
 import com.mfano.mfes.auth.services.BranchService;
-import com.mfano.mfes.auth.services.ProfileService;
-import com.mfano.mfes.auth.services.RoleService;
 import com.mfano.mfes.auth.services.UserService;
 import com.mfano.mfes.config.CustomUserDetails;
+import com.mfano.mfes.models.Client;
 import com.mfano.mfes.models.Group;
 import com.mfano.mfes.models.Portfolio;
+import com.mfano.mfes.services.ClientService;
 import com.mfano.mfes.services.GroupService;
 import com.mfano.mfes.services.PortfolioService;
 
@@ -28,26 +27,21 @@ import jakarta.validation.Valid;
 public class ManagerController {
 
     private final UserService userService;
-    // private final PostService postService;
-    private final ProfileService profileService;
     private final AuditService auditService;
-    private final RoleService roleService;
-    private final PortfolioService storeService;
     private final PortfolioService portfolioService;
     private final GroupService groupService;
     private final BranchService branchService;
+    private final ClientService clientService;
 
-    public ManagerController(UserService userService, ProfileService profileService, AuditService auditService,
-            RoleService roleService, PortfolioService storeService, PortfolioService portfolioService,
-        GroupService groupService, BranchService branchService) {
+    public ManagerController(UserService userService, AuditService auditService,
+            PortfolioService portfolioService,
+            GroupService groupService, BranchService branchService, ClientService clientService) {
         this.userService = userService;
-        this.profileService = profileService;
         this.auditService = auditService;
-        this.roleService = roleService;
-        this.storeService = storeService;
         this.portfolioService = portfolioService;
         this.groupService = groupService;
         this.branchService = branchService;
+        this.clientService = clientService;
     }
 
     @GetMapping("/{option}")
@@ -66,10 +60,16 @@ public class ManagerController {
                 break;
             case "groups":
                 red.addAttribute("groups", groupService.getAll());
-                //red.addAttribute("clients", clientService.findAll());
+                // red.addAttribute("clients", clientService.findAll());
                 red.addAttribute("portfolios", portfolioService.getAll());
                 red.addAttribute("branches", branchService.findAll());
                 dir = "manager/groups";
+                break;
+            case "clients":
+                red.addAttribute("clients", clientService.getAll());
+                red.addAttribute("groups", groupService.getAll());
+                red.addAttribute("branches", branchService.findAll());
+                dir = "manager/clients";
                 break;
         }
 
@@ -110,6 +110,23 @@ public class ManagerController {
         return "redirect:/manager/groups";
     }
 
+    @PostMapping("/clients/save")
+    public String saveGroup(
+            @Valid Client client,
+            RedirectAttributes redirectAttributes) {
+        if (clientService.getByPhone(client.getPhone()) != null) {
+            redirectAttributes.addFlashAttribute(
+                    "error", "Client phone already exists.");
+
+        } else {
+            clientService.save(client);
+
+            redirectAttributes.addFlashAttribute(
+                    "message", "Client created successfully.");
+        }
+        return "redirect:/manager/clients";
+    }
+
     @PostMapping("/portfolios/update/{id}")
     public String updateFolio(
             @PathVariable Long id, @Valid Portfolio portfolio,
@@ -142,6 +159,22 @@ public class ManagerController {
         return "redirect:/manager/groups";
     }
 
+    @PostMapping("/clients/update/{id}")
+    public String updateGroup(
+            @PathVariable Long id, @Valid Client client,
+            RedirectAttributes redirectAttributes) {
+        if (clientService.getById(id) == null) {
+            redirectAttributes.addFlashAttribute(
+                    "error", "Client not found: " + id);
+        } else {
+            clientService.save(client);
+            redirectAttributes.addFlashAttribute(
+                    "message", "Client updated successfully.");
+        }
+
+        return "redirect:/manager/clients";
+    }
+
     @PostMapping("/portfolios/{option}/{id}")
     public String manageFolio(
             @PathVariable Long id, @PathVariable String option,
@@ -169,6 +202,35 @@ public class ManagerController {
         }
 
         return "redirect:/manager/organization";
+    }
+
+    @PostMapping("/clients/{option}/{id}")
+    public String manageClient(
+            @PathVariable Long id, @PathVariable String option,
+            RedirectAttributes redirectAttribute) {
+        Client existing;
+        switch (option) {
+            case "toggle":
+                existing = clientService.getById(id);
+                if (existing == null) {
+                    redirectAttribute.addFlashAttribute(
+                            "error", "Client not found: " + id);
+                }
+                clientService.toggleActive(existing);
+                redirectAttribute.addFlashAttribute(
+                        "message", "Client status updated successfully.");
+                break;
+            case "delete":
+                groupService.delete(id);
+                redirectAttribute.addFlashAttribute(
+                        "message", "Client deleted successfully.");
+                break;
+
+            default:
+                break;
+        }
+
+        return "redirect:/manager/clients";
     }
 
     @PostMapping("/groups/{option}/{id}")

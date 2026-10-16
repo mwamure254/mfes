@@ -54,7 +54,7 @@
 
     <!-- CLIENTS -->
     <li class="nav-item" sec:authorize="hasRole('MANAGER')">
-      <a class="nav-link collapsed" th:href="@{/clients}">
+      <a class="nav-link collapsed" th:href="@{/manager/clients}">
         <i class="bi bi-person-lines-fill"></i>
         <span>Clients</span>
       </a>
@@ -88,7 +88,7 @@
       </a>
       <ul id="loanMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
         <li>
-          <a th:href="@{/loans/applications}">
+          <a th:href="@{/business/loans}">
             <i class="bi bi-file-earmark-text"></i><span>Applications</span>
             <span class="badge bg-warning ms-auto">12</span>
           </a>

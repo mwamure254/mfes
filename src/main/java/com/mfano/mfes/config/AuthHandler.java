@@ -31,7 +31,7 @@ public class AuthHandler implements AuthenticationSuccessHandler,
                 URLEncoder.encode(ms, StandardCharsets.UTF_8);
     }
 
-     public AuthHandler(AuditService auditService) {
+    public AuthHandler(AuditService auditService) {
         this.auditService = auditService;
     }
 
@@ -44,12 +44,17 @@ public class AuthHandler implements AuthenticationSuccessHandler,
         // log activity info
         if (authentication != null &&
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
-
-        auditService.record(
-                "user_login", "SUCCESS",
-                "User " + user.getEmail() + " logged in successfully.");
-            response.sendRedirect("/");
-            return;
+            if (!user.isEnabled()) {
+                message = "Contact your system admin for activation.";
+                response.sendRedirect(
+                        msg(message));
+            } else {
+                auditService.record(
+                        "user_login", "SUCCESS",
+                        "User " + user.getEmail() + " logged in successfully.");
+                response.sendRedirect("/");
+                return;
+            }
         }
         response.sendRedirect("/login");
     }
@@ -68,7 +73,7 @@ public class AuthHandler implements AuthenticationSuccessHandler,
         if (email == null || email.isBlank()) {
             email = "UNKNOWN";
         }
-        
+
         if (exception instanceof DisabledException) {
             message = " account is disabled";
 

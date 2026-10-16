@@ -61,7 +61,7 @@
 
                                 <img th:src="${author.image == null or author.image.isEmpty()}
         ? @{/image/rocket.svg}
-        : @{/profiles/{filename}(filename=${author.image})}" alt="MY" class="rounded-circle" height="150" width="120">
+        : @{/profiles/{filename}(filename=${author.image})}" alt="MY" class="rounded-circle" height="420" width="80%">
 
                                 <div class="pt-2">
                                     <a data-bs-toggle="modal" data-bs-target="#image" class="btn btn-primary btn-sm"
@@ -70,67 +70,55 @@
                                         title="Remove my profile image"><i class="bi bi-trash"></i></a>
                                 </div>
 
-                                <h2 th:text="${author.fin + ' ' + author.lan}">First Last</h2>
-                                <h3 th:text="${profile.designation}">Your Designation</h3>
-                                <div class="social-links mt-2">
-                                    <a th:href="${#strings.isEmpty(profile.twitter)} ? '#' : ${profile.twitter}"
-                                        class="twitter"><i class="bi bi-twitter"></i></a>
-                                    <a th:href="${#strings.isEmpty(profile.facebook)} ? '#' : ${profile.facebook}"
-                                        class="facebook"><i class="bi bi-facebook"></i></a>
-                                    <a th:href="${#strings.isEmpty(profile.instagram)} ? '#' : ${profile.instagram}"
-                                        class="instagram"><i class="bi bi-instagram"></i></a>
-                                    <a th:href="${#strings.isEmpty(profile.linkedin)} ? '#' : ${profile.linkedin}"
-                                        class="linkedin"><i class="bi bi-linkedin"></i></a>
-                                </div>
+                                <h3>Organization Structure</h3>
                             </div>
 
                             <div class="m-4">
                                 <h5 class="card-title">About</h5>
                                 <p class="small fst-italic" th:text="${profile.about}"></p>
 
-                                <h5 class="card-title">Profile Details</h5>
+                                <hr class="fas fa-divide">
+
+                                <h5 class="card-title">Organization Details</h5>
 
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">First Name</div>
+                                    <div class="col-lg-3 col-md-4 label ">Organization</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.fin}">Kevin</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">Other Name</div>
+                                    <div class="col-lg-3 col-md-4 label ">Branches</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.other}">Anderson</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">Last Name</div>
+                                    <div class="col-lg-3 col-md-4 label ">Portfolios</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.lan}">Harry</div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Gender</div>
+                                    <div class="col-lg-3 col-md-4 label">Groups</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.gender}">Male</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">ID</div>
+                                    <div class="col-lg-3 col-md-4 label">Clients</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.SN}">3*****5</div>
                                 </div>
-
-                                <hr class="fas fa-divide">
-
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Institution</div>
+                                    <div class="col-lg-3 col-md-4 label">Staff</div>
                                     <div class="col-lg-9 col-md-8">0411920, KDF0, Dakacha</div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">Designation</div>
+                                    <div class="col-lg-3 col-md-4 label">Performance</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.designation}">Web Designer
                                     </div>
                                 </div>
+
+                                <hr class="fas fa-divide">
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">County</div>
                                     <div class="col-lg-9 col-md-8" th:text="${profile.county}">Kilifi</div>
                                 </div>
-
-                                <hr class="fas fa-divide">
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">Address</div>
@@ -577,8 +565,8 @@
                             <label class="form-label">
                                 Description
                             </label>
-                            <textarea name="description" class="form-control" placeholder="Password" rows="3"
-                                maxlength="200" required></textarea>
+                            <textarea name="description" class="form-control" placeholder="Description of folio"
+                                rows="3" maxlength="200" required></textarea>
                             <small class="text-muted">
                                 Maximum of 200 characters
                                 description.

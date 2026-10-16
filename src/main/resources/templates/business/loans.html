@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <meta name="description" content="mfes loan applications page">
+    <meta name="author" content="mfano">
+    <title>MFES | Loans</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</th:block>
+
+<body>
+    <th:block th:insert="~{partials/_topbar}" />
+    <th:block th:insert="~{partials/_sidebar}" />
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-cash-coin"></i>
+                Loan Applications
+            </h1>
+        </div>
+
+        <section class="section dashboard">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <p class="text-muted mb-0">Manage loan applications and field verification</p>
+                </div>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="bi bi-plus-circle"></i> New Application
+                </button>
+            </div>
+
+            <!-- SEARCH + FILTER -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body d-flex gap-2 p-2">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="tableSearch" class="form-control" placeholder="Search by client name, ID...">
+                    </div>
+                    <select id="statusFilter" class="form-select" style="max-width: 200px;">
+                        <option value="">All Status</option>
+                        <option>PENDING</option>
+                        <option>APPROVED</option>
+                        <option>REJECTED</option>
+                        <option>DISBURSED</option>
+                    </select>
+                </div>
+
+                <!-- LOANS TABLE -->
+                <div class="card border-0">
+                    <div class="table-responsive p-2" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" id="table">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Application</th>
+                                    <th>Client</th>
+                                    <th>Group</th>
+                                    <th>Amount</th>
+                                    <th>Product</th>
+                                    <th>Repayments</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th sec:authorize="hasAnyRole('MANAGER', 'CREDIT')" class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="loan, stat : ${loanApplications}" th:id="'loan-' + ${loan.id}">
+                                    <td th:text="${stat.count}">1</td>
+                                    <td class="fw-bold text-primary" th:text="${loan.reference}">LN-0001</td>
+                                    <td>
+                                        <div th:text="${loan.client.fin + ' ' + loan.client.lan}">John Doe</div>
+                                        <small class="text-muted" th:text="${loan.client.idNumber}">12345678</small>
+                                    </td>
+                                    <td>
+                                        <div th:text="${loan.client.group != null ? loan.client.group.name : '-'}"></div>
+                                        <small class="text-muted" th:text="${loan.client.branch.name}"></small>
+                                    </td>
+                                    <td class="fw-bold" th:text="${loan.amount}">KES 50,000</td>
+                                    <td><span class="badge bg-light text-dark" th:text="${loan.product}">Business</span></td>
+
+                                    <!-- LOCATION -->
+                                    <td>
+                                        <div th:if="${loan.latitude != null and loan.longitude != null}">
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-geo-alt"></i>
+                                                <span th:text="${#numbers.formatDecimal(loan.latitude, 1, 6)}"></span>,
+                                                <span th:text="${#numbers.formatDecimal(loan.longitude, 1, 6)}"></span>
+                                            </small>
+                                            <a th:href="'https://www.google.com/maps?q='+${loan.latitude}+','+${loan.longitude}"
+                                                target="_blank" class="btn btn-sm btn-outline-success mt-1">
+                                                <i class="bi bi-map"></i> Verify
+                                            </a>
+                                        </div>
+                                        <span th:unless="${loan.latitude != null and loan.longitude != null}"
+                                            class="text-muted small">Not captured</span>
+                                    </td>
+
+                                    <!-- STATUS -->
+                                    <td>
+                                        <span th:switch="${loan.status}">
+                                            <span th:case="'PENDING'" class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                            <span th:case="'APPROVED'" class="badge bg-info"><i class="bi bi-check2-circle"></i> Approved</span>
+                                            <span th:case="'REJECTED'" class="badge bg-danger"><i class="bi bi-x-circle"></i> Rejected</span>
+                                            <span th:case="'DISBURSED'" class="badge bg-success"><i class="bi bi-cash-stack"></i> Disbursed</span>
+                                        </span>
+                                    </td>
+                                    <td th:text="${#temporals.format(loan.createdAt, 'dd MMM yyyy')}">01 Oct 2026</td>
+
+                                    <!-- ACTIONS -->
+                                    <td class="text-end" sec:authorize="hasAnyRole('MANAGER')">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                data-bs-toggle="modal" th:data-bs-target="'#viewModal' + ${loan.id}">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${loan.id}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <form th:action="@{/business/loans/approve/{id}(id=${loan.id})}" method="post" class="d-inline" th:if="${loan.status == 'PENDING'}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Approve">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <!-- VIEW MODAL -->
+                                        <div class="modal fade" th:id="'viewModal' + ${loan.id}" tabindex="-1">
+                                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header"><h5 class="modal-title">Application Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-6"><strong>Client:</strong> <span th:text="${loan.client.fin + ' ' + loan.client.lan}"></span></div>
+                                                            <div class="col-md-6"><strong>Amount:</strong> <span th:text="${#numbers.formatCurrency(loan.amount)}"></span></div>
+                                                            <div class="col-md-6"><strong>Term:</strong> <span th:text="${loan.termMonths + ' Months'}"></span></div>
+                                                            <div class="col-md-6"><strong>Interest:</strong> <span th:text="${loan.interestRate + '%'}"></span></div>
+                                                            <div class="col-12 mt-2"><strong>Purpose:</strong> <p th:text="${loan.product}"></p></div>
+                                                            <div class="col-12" th:if="${loan.latitude != null}">
+                                                                <div th:id="'viewMap' + ${loan.id}" style="height: 250px; border-radius: 8px;"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </td>
+
+                                    <!-- EDIT LOAN MODAL -->
+                                    <div class="modal fade" th:id="'editModal' + ${loan.id}" tabindex="-1">
+                                        <div class="modal-dialog modal-md modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form th:action="@{/business/loans/update/{id}(id=${loan.id})}" method="post">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit Application</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Client</label>
+                                                                <select class="form-select" name="client" required>
+                                                                    <option th:each="c : ${clients}" th:value="${c.id}" th:selected="${loan.client.id == c.id}" th:text="${c.fin + ' ' + c.lan}"></option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Amount (KES)</label>
+                                                                <input type="number" step="0.01" name="amount" class="form-control" th:value="${loan.amount}" required>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label class="form-label">Term Months</label>
+                                                                <input type="number" name="termMonths" class="form-control" th:value="${loan.termMonths}" required>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label class="form-label">Interest %</label>
+                                                                <input type="number" step="0.01" name="interestRate" class="form-control" th:value="${loan.interestRate}">
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label class="form-label">Status</label>
+                                                                <select class="form-select" name="status">
+                                                                    <option th:each="s : ${#arrays.toArray({'PENDING','APPROVED','REJECTED','DISBURSED'})}" th:value="${s}" th:selected="${loan.status == s}" th:text="${s}"></option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label">Product</label>
+                                                                <textarea name="product" class="form-control" rows="2" th:text="${loan.product}"></textarea>
+                                                            </div>
+
+                                                            <div class="col-12"><hr><h6><i class="bi bi-geo-alt-fill text-primary"></i> Business Location for Verification</h6></div>
+                                                            <div class="col-md-5">
+                                                                <label class="form-label">Latitude</label>
+                                                                <input type="number" step="any" name="latitude" th:id="'lat' + ${loan.id}" class="form-control" th:value="${loan.latitude}">
+                                                            </div>
+                                                            <div class="col-md-5">
+                                                                <label class="form-label">Longitude</label>
+                                                                <input type="number" step="any" name="longitude" th:id="'lng' + ${loan.id}" class="form-control" th:value="${loan.longitude}">
+                                                            </div>
+                                                            <div class="col-md-2 d-flex align-items-end">
+                                                                <button type="button" class="btn btn-outline-primary w-100" th:onclick="'getLocation(\'' + ${loan.id} + '\')'"><i class="bi bi-crosshair"></i></button>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div th:id="'map' + ${loan.id}" style="height: 200px; border-radius: 8px;"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Clear</button>
+                                                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tr>
+
+                                <tr th:if="${#lists.isEmpty(loanApplications)}">
+                                    <td colspan="10" class="text-center py-5">
+                                        <i class="bi bi-cash-coin fs-1 text-muted"></i>
+                                        <h5 class="mt-3">No loan applications</h5>
+                                        <p class="text-muted">Create your first loan application.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ADD LOAN MODAL -->
+                <div class="modal fade" id="addModal" tabindex="-1">
+                    <div class="modal-dialog modal-md modal-dialog-centered">
+                        <div class="modal-content">
+                            <form th:action="@{/business/loans/save}" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> New Loan Application</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Client</label>
+                                            <select class="form-select" name="client" required>
+                                                <option value="">SELECT</option>
+                                                <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.fin + ' ' + c.lan + ' - ' + c.idNumber}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Amount (KES)</label>
+                                            <input type="number" step="0.01" name="amount" class="form-control" placeholder="50000" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Term Months</label>
+                                            <input type="number" name="termMonths" class="form-control" value="12" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Interest %</label>
+                                            <input type="number" step="0.01" name="interestRate" class="form-control" value="10.0">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Application Date</label>
+                                            <input type="date" name="applicationDate" class="form-control" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Loan Product</label>
+                                            <textarea name="product" class="form-control" rows="2" placeholder="e.g. Stock for shop, School fees"></textarea>
+                                        </div>
+
+                                        <div class="col-12"><hr><h6><i class="bi bi-geo-alt-fill text-primary"></i> Business Location</h6></div>
+                                        <div class="col-md-5"><label class="form-label">Latitude</label><input type="number" step="any" name="latitude" id="latNew" class="form-control"></div>
+                                        <div class="col-md-5"><label class="form-label">Longitude</label><input type="number" step="any" name="longitude" id="lngNew" class="form-control"></div>
+                                        <div class="col-md-2 d-flex align-items-end"><button type="button" class="btn btn-outline-primary w-100" onclick="getLocation('New')"><i class="bi bi-crosshair"></i> GPS</button></div>
+                                        <div class="col-12"><div id="mapNew" style="height: 200px; border-radius: 8px;"></div></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="reset" class="btn btn-warning">Clear</button>
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Submit Application</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </main>
+
+    <th:block th:insert="~{partials/_footer}" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function getLocation(id) {
+            const latId = id === 'New' ? 'latNew' : 'lat' + id;
+            const lngId = id === 'New' ? 'lngNew' : 'lng' + id;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    document.getElementById(latId).value = pos.coords.latitude.toFixed(6);
+                    document.getElementById(lngId).value = pos.coords.longitude.toFixed(6);
+                    initMap(id, pos.coords.latitude, pos.coords.longitude);
+                }, () => alert("Could not get location"));
+            }
+        }
+        function initMap(id, lat, lng) {
+            const mapId = id === 'New' ? 'mapNew' : 'map' + id;
+            if(document.getElementById(mapId)._leaflet_id) return;
+            const map = L.map(mapId).setView([lat, lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            L.marker([lat, lng]).addTo(map);
+        }
+    </script>
+</body>
+</html>
