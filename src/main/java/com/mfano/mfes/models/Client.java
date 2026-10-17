@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import com.mfano.mfes.auth.models.BaseObject;
 import com.mfano.mfes.auth.models.Branch;
-import com.mfano.mfes.auth.models.CommonObject;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

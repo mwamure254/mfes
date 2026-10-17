@@ -27,6 +27,4 @@ public class Portfolio extends CommonObject{
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private User user;
-
-   
 }

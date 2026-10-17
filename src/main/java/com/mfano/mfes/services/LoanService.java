@@ -33,6 +33,33 @@ public class LoanService {
         return loanRepository.save(l);
     }
 
+    @Transactional
+    public Loan update(Long id, Loan l) {
+        Loan loan = getById(id).orElse(l);
+        loan.setAmount(l.getAmount());
+        loan.setClient(l.getClient());
+        loan.setDocument(l.getDocument());
+        loan.setInterestRate(l.getInterestRate());
+        loan.setLandMark(l.getLandMark());
+        loan.setStatus(l.getStatus());
+        loan.setTermMonths(l.getTermMonths());
+        loan.setProduct(l.getProduct());
+        loan.setLatitude(l.getLatitude());
+        loan.setLongitude(l.getLongitude());
+
+        if (l.getStatus() == LoanStatus.APPROVED) {
+            loan.setApprovalDate(LocalDate.now());
+        } else if (l.getStatus() == LoanStatus.DISBURSED) {
+            loan.setDisbursementDate(LocalDate.now());
+            // Call repayments calculator
+            repaymentService.generateSchedule(loan);
+        } else if (l.getStatus() == LoanStatus.CLOSED) {
+            loan.setCloseDate(LocalDate.now());
+        }
+
+        return save(loan);
+    }
+
     public Optional<Loan> getById(Long id) {
         return loanRepository.findById(id);
     }
@@ -54,13 +81,4 @@ public class LoanService {
         return loanRepository.findByClient(c);
     }
 
-    @Transactional
-    public void disburseLoan(Long loanId) {
-        Loan loan = loanRepository.findById(loanId).orElseThrow();
-        loan.setStatus(Loan.LoanStatus.DISBURSED);
-        loan.setDisbursementDate(LocalDate.now());
-        loanRepository.save(loan);
-
-        List<Repayments> schedule = repaymentService.generateSchedule(loan);
-    }
 }

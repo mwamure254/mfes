@@ -37,7 +37,8 @@ public class BusinessController {
     private final GroupService groupService;
 
     public BusinessController(UserService userService, ProfileService profileService, AuditService auditService,
-            RoleService roleService, LoanService loanService, ClientService clientService, BranchService branchService, GroupService groupService) {
+            RoleService roleService, LoanService loanService, ClientService clientService, BranchService branchService,
+            GroupService groupService) {
         this.userService = userService;
         this.profileService = profileService;
         this.auditService = auditService;
@@ -85,7 +86,7 @@ public class BusinessController {
             redirectAttributes.addFlashAttribute(
                     "error", "Loan not found: " + id);
         } else {
-            loanService.save(loan);
+            loanService.update(id,loan);
             redirectAttributes.addFlashAttribute(
                     "message", "Loan updated successfully.");
         }
@@ -100,12 +101,12 @@ public class BusinessController {
         Optional<Loan> existing = loanService.getById(id);
         switch (option) {
             case "toggle":
-                
+
                 if (existing == null) {
                     redirectAttribute.addFlashAttribute(
                             "error", "Loan not found: " + id);
                 }
-                //loanService.toggleActive(existing);
+                // loanService.toggleActive(existing);
                 redirectAttribute.addFlashAttribute(
                         "message", "Loan status updated successfully.");
                 break;
