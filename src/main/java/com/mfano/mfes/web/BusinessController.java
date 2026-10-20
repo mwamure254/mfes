@@ -2,7 +2,6 @@ package com.mfano.mfes.web;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mfes.auth.services.AuditService;
 import com.mfano.mfes.auth.services.BranchService;
-import com.mfano.mfes.auth.services.ProfileService;
 import com.mfano.mfes.auth.services.RoleService;
 import com.mfano.mfes.auth.services.UserService;
 import com.mfano.mfes.config.CustomUserDetails;
@@ -148,16 +146,16 @@ public class BusinessController {
         return "redirect:/business/loans";
     }
 
-    @GetMapping("/collections/{groupId}")
+    @GetMapping("/collections/groups/{groupId}")
     public String showGroup(
-            @PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails user,
-            Model model, GroupCollection collection) {
-
+            @PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails auth,
+            Model model, GroupCollection collection, RedirectAttributes red) {
+        userService.getPrices(auth, red);
         var group = groupService.getById(groupId);
 
         GroupCollection request = new GroupCollection();
         request.setGroupId(groupId);
-        request.setPostedBy(user.getEmail());
+        request.setPostedBy(auth.getEmail());
         request.setPaymentReference(collection.getPaymentReference());
         request.setPaymentAmount(collection.getPaymentAmount());
         request.setPaymentMethod(collection.getPaymentMethod());
@@ -175,7 +173,7 @@ public class BusinessController {
         return "business/group-collection";
     }
 
-    @PostMapping("/business/collections/groups")
+    @PostMapping("/collections/groups")
     public String postCollection(@Valid @ModelAttribute("collection") GroupCollection request,
             BindingResult bindingResult,
             Model model,
@@ -232,8 +230,8 @@ public class BusinessController {
     public String dues(
             @RequestParam(defaultValue = "all") String filter,
             @RequestParam(defaultValue = "30") int days,
-            Model model) {
-
+            Model model, RedirectAttributes red, @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, red);
         LocalDate today = LocalDate.now();
 
         LocalDate startDate;
@@ -263,8 +261,7 @@ public class BusinessController {
         if ("overdue".equalsIgnoreCase(filter)) {
             dues = repaymentService.findOverdue(today);
         } else if (startDate != null && endDate != null) {
-            dues = repaymentService.findUnpaidBetween(
-                    startDate, endDate);
+            dues = repaymentService.findUnpaidBetween(startDate, endDate);
         } else {
             dues = repaymentService.findAllUnpaid();
         }

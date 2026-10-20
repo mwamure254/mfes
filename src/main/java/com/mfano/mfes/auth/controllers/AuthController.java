@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mfes.config.CustomUserDetails;
 import com.mfano.mfes.dtos.UserDto;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.mfano.mfes.auth.models.Profile;
 import com.mfano.mfes.auth.models.User;
 import com.mfano.mfes.auth.services.AuditService;
@@ -89,6 +93,13 @@ public class AuthController {
             return login;
         }
 
+    }
+
+    @PostMapping("/session/keepalive")
+    @ResponseBody
+    public String keepAlive(HttpSession session) {
+        session.setMaxInactiveInterval(3600); // reset to 1 hour
+        return "OK";
     }
 
     @GetMapping("/register")

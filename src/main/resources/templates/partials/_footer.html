@@ -43,6 +43,25 @@
 	</div>
 </div><!-- End Logout Modal-->
 
+<!-- Session Timeout Modal -->
+<div class="modal fade" id="sessionModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title">Session Expiring</h5>
+      </div>
+      <div class="modal-body text-start">
+        <p>Your session will expire in <span id="countdown">60</span> seconds due to inactivity.</p>
+        <p>Do you want to continue?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="forceLogout()">Logout Now</button>
+        <button type="button" id="continueBtn" class="btn btn-primary">Continue Session</button>
+      </div>
+    </div>
+  </div>
+</div><!--End Session-->
+
 <!-- Floating Alerts-->
 <div th:if="${message}" id="floatingAlert"
 	class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 shadow" role="alert"

@@ -82,3 +82,65 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 5000);
     }
 });
+
+//session time out
+let sessionTimeout = 60 * 60 * 1000; // 1 hour in ms
+let warningTime = 5 * 60 * 1000; // show modal 5 min before
+let logoutTimer;
+let warningTimer;
+
+function startTimers() {
+    clearTimeout(logoutTimer);
+    clearTimeout(warningTimer);
+
+    // Show modal 5 min before logout
+    warningTimer = setTimeout(showSessionModal, sessionTimeout - warningTime);
+
+    // Force logout after 1 hour
+    logoutTimer = setTimeout(forceLogout, sessionTimeout);
+}
+
+function showSessionModal() {
+    const modal = new bootstrap.Modal(document.getElementById('sessionModal'));
+    modal.show();
+
+    // Start 60s countdown inside modal
+    let countdown = 60;
+    const countdownEl = document.getElementById('countdown');
+    const interval = setInterval(() => {
+        countdownEl.innerText = countdown;
+        countdown--;
+        if (countdown < 0) {
+            clearInterval(interval);
+            forceLogout();
+        }
+    }, 1000);
+
+    // If user clicks continue
+    document.getElementById('continueBtn').onclick = function () {
+        clearInterval(interval);
+        modal.hide();
+        extendSession();
+    }
+}
+
+function extendSession() {
+    // Ping server to refresh session
+    fetch('/session/keepalive', { method: 'POST' })
+        .then(() => {
+            startTimers(); // restart 1 hour timer
+        });
+}
+
+function forceLogout() {
+    window.location.href = '/logout';
+}
+
+// Reset timers on any user activity
+['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
+    document.addEventListener(event, startTimers);
+});
+
+// Start on page load
+window.onload = startTimers;
+//end session

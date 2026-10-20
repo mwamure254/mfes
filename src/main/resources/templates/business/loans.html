@@ -404,27 +404,6 @@
     </main>
 
     <th:block th:insert="~{partials/_footer}" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        function getLocation(id) {
-            const latId = id === 'New' ? 'latNew' : 'lat' + id;
-            const lngId = id === 'New' ? 'lngNew' : 'lng' + id;
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    document.getElementById(latId).value = pos.coords.latitude.toFixed(6);
-                    document.getElementById(lngId).value = pos.coords.longitude.toFixed(6);
-                    initMap(id, pos.coords.latitude, pos.coords.longitude);
-                }, () => alert("Could not get location"));
-            }
-        }
-        function initMap(id, lat, lng) {
-            const mapId = id === 'New' ? 'mapNew' : 'map' + id;
-            if (document.getElementById(mapId)._leaflet_id) return;
-            const map = L.map(mapId).setView([lat, lng], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            L.marker([lat, lng]).addTo(map);
-        }
-    </script>
 </body>
 
 </html>
