@@ -64,9 +64,8 @@ public class Loan extends BaseObject {
     private String product;
     private String document;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private LoanStatus status = LoanStatus.PENDING;
+    private String status = "PENDING";
 
     @Column(name = "application_date", nullable = false)
     private LocalDate applicationDate = LocalDate.now();
@@ -92,6 +91,11 @@ public class Loan extends BaseObject {
     @Digits(integer = 4, fraction = 6)
     @Column(precision = 10, scale = 6)
     private BigDecimal longitude;
+
+    private BigDecimal monthlyRepayment;
+    private BigDecimal totalAmount;
+    private BigDecimal totalInterest;
+    private BigDecimal olb = totalAmount;
 
     @Size(max = 255)
     @Column(name = "land_mark")

@@ -24,7 +24,7 @@ public class AuthHandler implements AuthenticationSuccessHandler,
         AuthenticationFailureHandler, LogoutHandler {
 
     private final AuditService auditService;
-    String message = "Invalid username or password";
+    String message = " Invalid username or password";
 
     private String msg(String ms) {
         return "/login?error=true&message=" +
@@ -94,7 +94,7 @@ public class AuthHandler implements AuthenticationSuccessHandler,
         }
 
         auditService.record(
-                "USER_LOGIN", "FAIL",
+                "user_login", "FAIL",
                 "User " + email + message);
     }
 

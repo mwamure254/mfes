@@ -50,7 +50,7 @@ public class AuthController {
 
     // guest user
     @GetMapping("/")
-    public String redirectAfterLogin(@AuthenticationPrincipal CustomUserDetails auth, RedirectAttributes model) {
+    public String redirectLogin(@AuthenticationPrincipal CustomUserDetails auth, RedirectAttributes model) {
 
         if (auth == null) {
             return "redirect:/login";

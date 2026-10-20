@@ -78,8 +78,8 @@
     </li>
 
     <!-- BUSINESS -->
-    <li class="nav-heading" sec:authorize="hasAnyRole('PO', 'MANAGER')">Business</li>
-    <li class="nav-item" sec:authorize="hasAnyRole('PO', 'MANAGER')">
+    <li class="nav-heading" sec:authorize="hasAnyRole('PO', 'BDO', 'MANAGER')">Business</li>
+    <li class="nav-item" sec:authorize="hasAnyRole('PO', 'BDO', 'MANAGER')">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#loanMenu" aria-expanded="false"
         aria-controls="loanMenu">
         <i class="bi bi-cash-stack"></i>
@@ -87,17 +87,29 @@
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="loanMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-        <li>
+        <li sec:authorize="hasAnyRole('BDO')">
           <a th:href="@{/business/loans}">
             <i class="bi bi-file-earmark-text"></i><span>Applications</span>
+            <span class="badge bg-secondary ms-auto">12</span>
+          </a>
+        </li>
+        <li sec:authorize="hasAnyRole('MANAGER')">
+          <a th:href="@{/loans/approvals}"><i class="bi bi-check2-circle"></i><span>Approvals</span>
             <span class="badge bg-warning ms-auto">12</span>
           </a>
         </li>
-        <li><a th:href="@{/loans/approvals}"><i class="bi bi-check2-circle"></i><span>Approvals</span></a></li>
-        <li><a th:href="@{/loans/disbursements}"><i class="bi bi-send"></i><span>Disbursements</span></a></li>
-        <li><a th:href="@{/loans/repayments}"><i class="bi bi-arrow-repeat"></i><span>Repayments</span></a></li>
+        <li sec:authorize="hasAnyRole('PO')">
+          <a th:href="@{/loans/disbursements}"><i class="bi bi-send"></i><span>Disbursements</span>
+            <span class="badge bg-warning ms-auto">12</span>
+          </a>
+        </li>
         <li>
-          <a th:href="@{/loans/arrears}">
+          <a th:href="@{/loans/repayments}"><i class="bi bi-arrow-repeat"></i><span>Repayments</span>
+            <span class="badge bg-warning ms-auto">12</span>
+          </a>
+        </li>
+        <li>
+          <a th:href="@{/business/dues}">
             <i class="bi bi-exclamation-triangle"></i><span>Overdue</span>
             <span class="badge bg-danger ms-auto">5</span>
           </a>
@@ -115,7 +127,7 @@
       </a>
       <ul id="branchMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
         <li><a th:href="@{/branch/portfolio}"><i class="bi bi-folder2-open"></i><span>Portfolios</span></a></li>
-        <li><a th:href="@{/branch/repayments}"><i class="bi bi-wallet2"></i><span>Collections</span></a></li>
+        <li><a th:href="@{/business/collections}"><i class="bi bi-wallet2"></i><span>Collections</span></a></li>
         <li><a th:href="@{/branch/analytics}"><i class="bi bi-bar-chart"></i><span>Analytics</span></a></li>
       </ul>
     </li>
@@ -130,8 +142,8 @@
       </a>
       <ul id="portfolioMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
         <li><a th:href="@{/portfolio/analytics}"><i class="bi bi-activity"></i><span>Analytics</span></a></li>
-        <li><a th:href="@{/reports/collections}"><i class="bi bi-cash-coin"></i><span>Collections</span></a></li>
-        <li><a th:href="@{/reports/arrears}"><i class="bi bi-hourglass-split"></i><span>Arrears</span></a></li>
+        <li><a th:href="@{/business/collections}"><i class="bi bi-cash-coin"></i><span>Collections</span></a></li>
+        <li><a th:href="@{/business/arrears}"><i class="bi bi-hourglass-split"></i><span>Arrears</span></a></li>
       </ul>
     </li>
 

@@ -63,3 +63,22 @@ function initMap(id, lat, lng) {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     L.marker([lat, lng]).addTo(map);
 }
+
+/*!-- ================= Alert Dismiss ================= -->*/
+document.addEventListener("DOMContentLoaded", function () {
+    const alertError = document.getElementById("floatingAlertError");
+    if (alertError) {
+        setTimeout(() => {
+            const brAlert = bootstrap.Alert.getOrCreateInstance(alertError);
+            brAlert.close();
+        }, 5000);
+    }
+
+    const alertSuccess = document.getElementById("floatingAlertSuccess");
+    if (alertSuccess) {
+        setTimeout(() => {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(alertSuccess);
+            bsAlert.close();
+        }, 5000);
+    }
+});

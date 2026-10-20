@@ -37,7 +37,8 @@
                 <div class="card-body d-flex gap-2 p-2">
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" id="tableSearch" class="form-control" placeholder="Search by client name, ID...">
+                        <input type="text" id="tableSearch" class="form-control"
+                            placeholder="Search by client name, ID...">
                     </div>
                     <select id="statusFilter" class="form-select" style="max-width: 200px;">
                         <option value="">All Status</option>
@@ -45,6 +46,7 @@
                         <option>APPROVED</option>
                         <option>REJECTED</option>
                         <option>DISBURSED</option>
+                        <option>CLOSED</option>
                     </select>
                 </div>
 
@@ -76,11 +78,13 @@
                                         <small class="text-muted" th:text="${loan.client.idNumber}">12345678</small>
                                     </td>
                                     <td>
-                                        <div th:text="${loan.client.group != null ? loan.client.group.name : '-'}"></div>
+                                        <div th:text="${loan.client.group != null ? loan.client.group.name : '-'}">
+                                        </div>
                                         <small class="text-muted" th:text="${loan.client.branch.name}"></small>
                                     </td>
                                     <td class="fw-bold" th:text="${loan.amount}">KES 50,000</td>
-                                    <td><span class="badge bg-light text-dark" th:text="${loan.product}">Business</span></td>
+                                    <td><span class="badge bg-light text-dark" th:text="${loan.product}">Business</span>
+                                    </td>
 
                                     <!-- LOCATION -->
                                     <td>
@@ -102,10 +106,14 @@
                                     <!-- STATUS -->
                                     <td>
                                         <span th:switch="${loan.status}">
-                                            <span th:case="'PENDING'" class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
-                                            <span th:case="'APPROVED'" class="badge bg-info"><i class="bi bi-check2-circle"></i> Approved</span>
-                                            <span th:case="'REJECTED'" class="badge bg-danger"><i class="bi bi-x-circle"></i> Rejected</span>
-                                            <span th:case="'DISBURSED'" class="badge bg-success"><i class="bi bi-cash-stack"></i> Disbursed</span>
+                                            <span th:case="'PENDING'" class="badge bg-warning text-dark"><i
+                                                    class="bi bi-hourglass-split"></i> Pending</span>
+                                            <span th:case="'APPROVED'" class="badge bg-info"><i
+                                                    class="bi bi-check2-circle"></i> Approved</span>
+                                            <span th:case="'REJECTED'" class="badge bg-danger"><i
+                                                    class="bi bi-x-circle"></i> Rejected</span>
+                                            <span th:case="'DISBURSED'" class="badge bg-success"><i
+                                                    class="bi bi-cash-stack"></i> Disbursed</span>
                                         </span>
                                     </td>
                                     <td th:text="${#temporals.format(loan.createdAt, 'dd MMM yyyy')}">01 Oct 2026</td>
@@ -121,27 +129,50 @@
                                                 data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${loan.id}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <form th:action="@{/business/loans/approve/{id}(id=${loan.id})}" method="post" class="d-inline" th:if="${loan.status == 'PENDING'}">
-                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Approve">
+                                            <form th:action="@{/business/loans/approve/{id}(id=${loan.id})}"
+                                                method="post" class="d-inline" th:if="${loan.status == 'PENDING'}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success"
+                                                    title="Approve">
                                                     <i class="bi bi-check-lg"></i>
                                                 </button>
                                             </form>
+
+                                            <!-- DELETE -->
+                                            <a class="btn btn-sm btn-outline-danger" th:if="${loan.status == 'PENDING'}"
+                                                data-bs-toggle="modal" th:data-bs-target="'#deleteModal' + ${loan.id}"
+                                                title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
                                         </div>
 
                                         <!-- VIEW MODAL -->
                                         <div class="modal fade" th:id="'viewModal' + ${loan.id}" tabindex="-1">
                                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                                 <div class="modal-content">
-                                                    <div class="modal-header"><h5 class="modal-title">Application Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Application Details</h5><button
+                                                            type="button" class="btn-close"
+                                                            data-bs-dismiss="modal"></button>
+                                                    </div>
                                                     <div class="modal-body">
                                                         <div class="row">
-                                                            <div class="col-md-6"><strong>Client:</strong> <span th:text="${loan.client.fin + ' ' + loan.client.lan}"></span></div>
-                                                            <div class="col-md-6"><strong>Amount:</strong> <span th:text="${#numbers.formatCurrency(loan.amount)}"></span></div>
-                                                            <div class="col-md-6"><strong>Term:</strong> <span th:text="${loan.termMonths + ' Months'}"></span></div>
-                                                            <div class="col-md-6"><strong>Interest:</strong> <span th:text="${loan.interestRate + '%'}"></span></div>
-                                                            <div class="col-12 mt-2"><strong>Purpose:</strong> <p th:text="${loan.product}"></p></div>
+                                                            <div class="col-md-6"><strong>Client:</strong> <span
+                                                                    th:text="${loan.client.fin + ' ' + loan.client.lan}"></span>
+                                                            </div>
+                                                            <div class="col-md-6"><strong>Amount:</strong> <span
+                                                                    th:text="${#numbers.formatCurrency(loan.amount)}"></span>
+                                                            </div>
+                                                            <div class="col-md-6"><strong>Term:</strong> <span
+                                                                    th:text="${loan.termMonths + ' Months'}"></span>
+                                                            </div>
+                                                            <div class="col-md-6"><strong>Interest:</strong> <span
+                                                                    th:text="${loan.interestRate + '%'}"></span></div>
+                                                            <div class="col-12 mt-2"><strong>Purpose:</strong>
+                                                                <p th:text="${loan.product}"></p>
+                                                            </div>
                                                             <div class="col-12" th:if="${loan.latitude != null}">
-                                                                <div th:id="'viewMap' + ${loan.id}" style="height: 250px; border-radius: 8px;"></div>
+                                                                <div th:id="'viewMap' + ${loan.id}"
+                                                                    style="height: 250px; border-radius: 8px;"></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -149,68 +180,135 @@
                                             </div>
                                         </div>
 
+                                        <!-- DELETE MODAL -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${loan.id}" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Delete Loan
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body text-start">
+                                                        Are you sure you want to delete
+                                                        <strong th:text="${loan.reference}">
+                                                            User
+                                                        </strong>?
+                                                        <br>
+                                                        <small class="text-danger">
+                                                            This action cannot be undone.
+                                                        </small>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">
+                                                            Cancel
+                                                        </button>
+                                                        <form th:action="@{/business/loans/delete/{id}(id=${loan.id})}"
+                                                            method="post">
+                                                            <button type="submit" class="btn btn-danger">
+                                                                <i class="bi bi-trash"></i>
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
 
                                     <!-- EDIT LOAN MODAL -->
                                     <div class="modal fade" th:id="'editModal' + ${loan.id}" tabindex="-1">
                                         <div class="modal-dialog modal-md modal-dialog-centered">
                                             <div class="modal-content">
-                                                <form th:action="@{/business/loans/update/{id}(id=${loan.id})}" method="post">
+                                                <form th:action="@{/business/loans/update/{id}(id=${loan.id})}"
+                                                    method="post">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit Application</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit
+                                                            Application</h5>
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="row g-3">
                                                             <div class="col-md-6">
                                                                 <label class="form-label">Client</label>
                                                                 <select class="form-select" name="client" required>
-                                                                    <option th:each="c : ${clients}" th:value="${c.id}" th:selected="${loan.client.id == c.id}" th:text="${c.fin + ' ' + c.lan}"></option>
+                                                                    <option th:each="c : ${clients}" th:value="${c.id}"
+                                                                        th:selected="${loan.client.id == c.id}"
+                                                                        th:text="${c.fin + ' ' + c.lan}"></option>
                                                                 </select>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <label class="form-label">Amount (Ksh)</label>
-                                                                <input type="number" step="0.01" name="amount" class="form-control" th:value="${loan.amount}" required>
+                                                                <input type="number" step="0.01" name="amount"
+                                                                    class="form-control" th:value="${loan.amount}"
+                                                                    required>
                                                             </div>
                                                             <div class="col-md-4">
                                                                 <label class="form-label">Term Months</label>
-                                                                <input type="number" name="termMonths" class="form-control" th:value="${loan.termMonths}" required>
+                                                                <input type="number" name="termMonths"
+                                                                    class="form-control" th:value="${loan.termMonths}"
+                                                                    required>
                                                             </div>
                                                             <div class="col-md-4">
                                                                 <label class="form-label">Interest %</label>
-                                                                <input type="number" step="0.01" name="interestRate" class="form-control" th:value="${loan.interestRate}">
+                                                                <input type="number" step="0.01" name="interestRate"
+                                                                    class="form-control"
+                                                                    th:value="${loan.interestRate}">
                                                             </div>
                                                             <div class="col-md-4">
                                                                 <label class="form-label">Status</label>
                                                                 <select class="form-select" name="status">
-                                                                    <option th:each="s : ${#arrays.toArray({'PENDING','APPROVED','REJECTED','DISBURSED'})}" th:value="${s}" th:selected="${loan.status == s}" th:text="${s}"></option>
+                                                                    <option
+                                                                        th:each="s : ${#arrays.toArray({'PENDING','APPROVED','REJECTED','DISBURSED'})}"
+                                                                        th:value="${s}"
+                                                                        th:selected="${loan.status == s}"
+                                                                        th:text="${s}"></option>
                                                                 </select>
                                                             </div>
                                                             <div class="col-12">
                                                                 <label class="form-label">Product</label>
-                                                                <textarea name="product" class="form-control" rows="2" th:text="${loan.product}"></textarea>
+                                                                <textarea name="product" class="form-control" rows="2"
+                                                                    th:text="${loan.product}"></textarea>
                                                             </div>
 
-                                                            <div class="col-12"><hr><h6><i class="bi bi-geo-alt-fill text-primary"></i> Business Location for Verification</h6></div>
+                                                            <div class="col-12">
+                                                                <hr>
+                                                                <h6><i class="bi bi-geo-alt-fill text-primary"></i>
+                                                                    Business Location for Verification</h6>
+                                                            </div>
                                                             <div class="col-md-5">
                                                                 <label class="form-label">Latitude</label>
-                                                                <input type="number" step="any" name="latitude" th:id="'lat' + ${loan.id}" class="form-control" th:value="${loan.latitude}">
+                                                                <input type="number" step="any" name="latitude"
+                                                                    th:id="'lat' + ${loan.id}" class="form-control"
+                                                                    th:value="${loan.latitude}">
                                                             </div>
                                                             <div class="col-md-5">
                                                                 <label class="form-label">Longitude</label>
-                                                                <input type="number" step="any" name="longitude" th:id="'lng' + ${loan.id}" class="form-control" th:value="${loan.longitude}">
+                                                                <input type="number" step="any" name="longitude"
+                                                                    th:id="'lng' + ${loan.id}" class="form-control"
+                                                                    th:value="${loan.longitude}">
                                                             </div>
                                                             <div class="col-md-2 d-flex align-items-end">
-                                                                <button type="button" class="btn btn-outline-primary w-100" th:onclick="'getLocation(\'' + ${loan.id} + '\')'"><i class="bi bi-crosshair"></i></button>
+                                                                <button type="button"
+                                                                    class="btn btn-outline-primary w-100"
+                                                                    th:onclick="'getLocation(\'' + ${loan.id} + '\')'"><i
+                                                                        class="bi bi-crosshair"></i></button>
                                                             </div>
                                                             <div class="col-12">
-                                                                <div th:id="'map' + ${loan.id}" style="height: 200px; border-radius: 8px;"></div>
+                                                                <div th:id="'map' + ${loan.id}"
+                                                                    style="height: 200px; border-radius: 8px;"></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Clear</button>
-                                                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save</button>
+                                                        <button type="reset" class="btn btn-warning"
+                                                            data-bs-dismiss="modal">Clear</button>
+                                                        <button type="submit" class="btn btn-primary"><i
+                                                                class="bi bi-save"></i> Save</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -245,40 +343,58 @@
                                             <label class="form-label">Client</label>
                                             <select class="form-select" name="client" required>
                                                 <option value="">SELECT</option>
-                                                <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.fin + ' ' + c.lan + ' - ' + c.idNumber}"></option>
+                                                <option th:each="c : ${clients}" th:value="${c.id}"
+                                                    th:text="${c.fin + ' ' + c.lan + ' - ' + c.idNumber}"></option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Amount (Ksh)</label>
-                                            <input type="number" step="0.01" name="amount" class="form-control" placeholder="50000" required>
+                                            <input type="number" step="0.01" name="amount" class="form-control"
+                                                placeholder="50000" required>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Term Months</label>
-                                            <input type="number" name="termMonths" class="form-control" value="12" required>
+                                            <input type="number" name="termMonths" class="form-control" value="12"
+                                                required>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Interest %</label>
-                                            <input type="number" step="0.01" name="interestRate" class="form-control" value="10.0">
+                                            <input type="number" step="0.01" name="interestRate" class="form-control"
+                                                value="10.0">
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Application Date</label>
-                                            <input type="date" name="applicationDate" class="form-control" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                                            <input type="date" name="applicationDate" class="form-control"
+                                                th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label">Loan Product</label>
-                                            <textarea name="product" class="form-control" rows="2" placeholder="e.g. Stock for shop, School fees"></textarea>
+                                            <textarea name="product" class="form-control" rows="2"
+                                                placeholder="e.g. Stock for shop, School fees"></textarea>
                                         </div>
 
-                                        <div class="col-12"><hr><h6><i class="bi bi-geo-alt-fill text-primary"></i> Business Location</h6></div>
-                                        <div class="col-md-5"><label class="form-label">Latitude</label><input type="number" step="any" name="latitude" id="latNew" class="form-control"></div>
-                                        <div class="col-md-5"><label class="form-label">Longitude</label><input type="number" step="any" name="longitude" id="lngNew" class="form-control"></div>
-                                        <div class="col-md-2 d-flex align-items-end"><button type="button" class="btn btn-outline-primary w-100" onclick="getLocation('New')"><i class="bi bi-crosshair"></i> GPS</button></div>
-                                        <div class="col-12"><div id="mapNew" style="height: 200px; border-radius: 8px;"></div></div>
+                                        <div class="col-12">
+                                            <hr>
+                                            <h6><i class="bi bi-geo-alt-fill text-primary"></i> Business Location</h6>
+                                        </div>
+                                        <div class="col-md-5"><label class="form-label">Latitude</label><input
+                                                type="number" step="any" name="latitude" id="latNew"
+                                                class="form-control"></div>
+                                        <div class="col-md-5"><label class="form-label">Longitude</label><input
+                                                type="number" step="any" name="longitude" id="lngNew"
+                                                class="form-control"></div>
+                                        <div class="col-md-2 d-flex align-items-end"><button type="button"
+                                                class="btn btn-outline-primary w-100" onclick="getLocation('New')"><i
+                                                    class="bi bi-crosshair"></i> GPS</button></div>
+                                        <div class="col-12">
+                                            <div id="mapNew" style="height: 200px; border-radius: 8px;"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="reset" class="btn btn-warning">Clear</button>
-                                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Submit Application</button>
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Submit
+                                        Application</button>
                                 </div>
                             </form>
                         </div>
@@ -303,11 +419,12 @@
         }
         function initMap(id, lat, lng) {
             const mapId = id === 'New' ? 'mapNew' : 'map' + id;
-            if(document.getElementById(mapId)._leaflet_id) return;
+            if (document.getElementById(mapId)._leaflet_id) return;
             const map = L.map(mapId).setView([lat, lng], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             L.marker([lat, lng]).addTo(map);
         }
     </script>
 </body>
+
 </html>

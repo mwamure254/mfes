@@ -18,11 +18,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Setter 
+@Setter
 @Getter
 @Table(name = "repayments")
 public class Repayments {
-    public enum RepaymentStatus { PENDING, PAID, LATE, WAIVED }
+    public enum RepaymentStatus {
+        PENDING, PAID, LATE, WAIVED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +51,25 @@ public class Repayments {
 
     @Column(precision = 12, scale = 2)
     private BigDecimal amountPaid = BigDecimal.ZERO;
+    @Column(precision = 12, scale = 2)
+    private BigDecimal amountDue = totalAmount;
 
-    @Enumerated(EnumType.STRING)
-    private RepaymentStatus status = RepaymentStatus.PENDING;
+    @Column(precision = 12, scale = 2)
+    private BigDecimal penalty = BigDecimal.ZERO;
+    private int penaltyWeeksCharged = 0;
+
+    private String status = "PENDING";
 
     @Column(name = "paid_date")
     private LocalDate paidDate;
+
+    public BigDecimal getTotalPayable() {
+        BigDecimal unpaid = amountDue.subtract(amountPaid)
+                .max(BigDecimal.ZERO);
+
+        return unpaid.add(
+                penalty == null
+                        ? BigDecimal.ZERO
+                        : penalty);
+    }
 }
