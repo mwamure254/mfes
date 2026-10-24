@@ -3,7 +3,7 @@
        ========================================== */
 
 .audit-table-container {
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 25px);
     min-height: 250px;
     overflow-y: auto;
     overflow-x: auto;
@@ -45,7 +45,7 @@
 @media (max-width: 768px) {
 
     .audit-table-container {
-        max-height: calc(100vh - 150px);
+        max-height: calc(100vh - 15px);
         min-height: 200px;
     }
 
@@ -62,7 +62,7 @@
 @media (max-width: 576px) {
 
     .audit-table-container {
-        max-height: calc(100vh - 100px);
+        max-height: calc(100vh - 5px);
     }
 
 }

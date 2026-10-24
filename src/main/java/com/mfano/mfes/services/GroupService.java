@@ -37,7 +37,7 @@ public class GroupService {
     }
 
     public List<Group> getAll(){
-        return groupRepository.findAll();
+        return groupRepository.findAllByOrderByCreatedAtDesc();
     }
 
      public void toggleActive(Group id) {

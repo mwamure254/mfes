@@ -95,7 +95,7 @@ public class Loan extends BaseObject {
     private BigDecimal monthlyRepayment;
     private BigDecimal totalAmount;
     private BigDecimal totalInterest;
-    private BigDecimal olb = totalAmount;
+    private BigDecimal olb;
 
     @Size(max = 255)
     @Column(name = "land_mark")
@@ -115,6 +115,13 @@ public class Loan extends BaseObject {
 
     public BigDecimal getTotalAmount() {
         return getMonthlyRepayment().multiply(BigDecimal.valueOf(termMonths));
+    }
+
+    public BigDecimal getOlb() {
+        if (olb == null) {
+            this.olb = getTotalAmount();
+        }
+        return this.olb;
     }
 
     public BigDecimal getTotalInterest() {

@@ -10,7 +10,7 @@ import com.mfano.mfes.models.Group;
 
 public interface ClientRepository extends JpaRepository<Client,Long>{
 
-    List<Client> findAll();
+    List<Client> findAllByOrderByCreatedAtDesc();
 
     List<Client> findByGroup(Group g);
 

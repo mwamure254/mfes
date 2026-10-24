@@ -2,22 +2,33 @@ package com.mfano.mfes.services;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.mfano.mfes.models.Client;
 import com.mfano.mfes.models.GroupCollection;
 import com.mfano.mfes.models.MemberCollection;
 import com.mfano.mfes.repositories.GroupCollectionRepository;
+import com.mfano.mfes.repositories.MemberCollectionRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class GroupCollectionService {
+    private final GroupService groupService;
+    private final ClientService clientService;
     private final GroupCollectionRepository collectionRepository;
+    private final MemberCollectionRepository memberRepository;
 
-    public GroupCollectionService(GroupCollectionRepository collectionRepository) {
+    public GroupCollectionService(GroupCollectionRepository collectionRepository,
+            MemberCollectionRepository memberRepository, GroupService groupService,
+            ClientService clientService) {
         this.collectionRepository = collectionRepository;
+        this.memberRepository = memberRepository;
+        this.groupService = groupService;
+        this.clientService = clientService;
     }
 
     @Transactional
@@ -57,8 +68,14 @@ public class GroupCollectionService {
                 continue;
             }
 
-            total = total.add(savings).add(loan);
+            Client existing = clientService.getById(line.getMemberId());
+            existing.setMsa(existing.getMsa().add(savings));
+            existing.setMla(existing.getMla().add(loan));
+            clientService.save(existing);
 
+            total = total.add(savings).add(loan);
+            // Establish the parent-child relationship.
+            line.setGroupCollection(request);
             /*
              * Resolve the member from the database.
              * Verify that the member belongs to request.getGroupId().
@@ -69,6 +86,8 @@ public class GroupCollectionService {
              * Do not use an account ID or balance supplied by the browser.
              */
         }
+
+        collectionRepository.save(request);
 
         if (total.signum() <= 0) {
             throw new IllegalArgumentException(
@@ -91,5 +110,30 @@ public class GroupCollectionService {
 
     private BigDecimal amountOrZero(BigDecimal amount) {
         return amount == null ? BigDecimal.ZERO : amount;
+    }
+
+    public List<GroupCollection> getAll() {
+        return collectionRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public void save(GroupCollection g) {
+        collectionRepository.save(g);
+    }
+
+    // Get members totals and grand totals
+    public BigDecimal getSavingsTotal(Long memberId) {
+        return memberRepository.getSavingsTotal(memberId);
+    }
+
+    public BigDecimal getLoanTotal(Long memberId) {
+        return memberRepository.getLoanTotal(memberId);
+    }
+
+    public BigDecimal getSavings() {
+        return memberRepository.getSavings();
+    }
+
+    public BigDecimal getLoans() {
+        return memberRepository.getLoans();
     }
 }

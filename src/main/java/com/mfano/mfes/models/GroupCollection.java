@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,18 +29,28 @@ public class GroupCollection extends BaseObject {
     @NotNull
     private Long groupId;
 
-    @NotBlank
-    private String paymentMethod = "CASH";
+    @NotNull
+    private String pm = "CASH";
 
     @Size(max = 100)
-    private String paymentReference;
+    private String pr;
 
     @NotNull
     private String postedBy;
 
     @NotNull
-    private BigDecimal paymentAmount = BigDecimal.ZERO;
+    @PositiveOrZero
+    private BigDecimal pa = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "collectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+        mappedBy = "groupCollection",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private List<MemberCollection> members = new ArrayList<>();
+
+    public void addMember(MemberCollection member) {
+        members.add(member);
+        member.setGroupCollection(this);
+    }
 }

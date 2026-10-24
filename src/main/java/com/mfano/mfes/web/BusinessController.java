@@ -1,7 +1,13 @@
 package com.mfano.mfes.web;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,6 +26,8 @@ import com.mfano.mfes.auth.services.BranchService;
 import com.mfano.mfes.auth.services.RoleService;
 import com.mfano.mfes.auth.services.UserService;
 import com.mfano.mfes.config.CustomUserDetails;
+import com.mfano.mfes.dtos.LoanRepaymentSummary;
+import com.mfano.mfes.models.Group;
 import com.mfano.mfes.models.GroupCollection;
 import com.mfano.mfes.models.Loan;
 import com.mfano.mfes.models.MemberCollection;
@@ -28,6 +36,7 @@ import com.mfano.mfes.services.ClientService;
 import com.mfano.mfes.services.GroupCollectionService;
 import com.mfano.mfes.services.GroupService;
 import com.mfano.mfes.services.LoanService;
+import com.mfano.mfes.services.PortfolioService;
 import com.mfano.mfes.services.RepaymentService;
 
 import jakarta.validation.Valid;
@@ -44,10 +53,11 @@ public class BusinessController {
     private final GroupService groupService;
     private final GroupCollectionService collectionService;
     private final RepaymentService repaymentService;
+    private final PortfolioService forlioService;
 
     public BusinessController(UserService userService, AuditService auditService, RepaymentService repaymentService,
             RoleService roleService, LoanService loanService, ClientService clientService, BranchService branchService,
-            GroupService groupService, GroupCollectionService collectionService) {
+            GroupService groupService, GroupCollectionService collectionService, PortfolioService forlioService) {
         this.userService = userService;
         this.auditService = auditService;
         this.roleService = roleService;
@@ -57,6 +67,7 @@ public class BusinessController {
         this.groupService = groupService;
         this.collectionService = collectionService;
         this.repaymentService = repaymentService;
+        this.forlioService = forlioService;
     }
 
     @GetMapping("/{option}")
@@ -64,19 +75,59 @@ public class BusinessController {
         userService.getPrices(auth, red);
 
         String dir = "redirect:/";
+        if (auth.getRoles().contains("ADMIN")) {
+
+        } else if (auth.getRoles().contains("CEO")) {
+
+        } else if (auth.getRoles().contains("MANAGER")) {
+
+        } else if (auth.getRoles().contains("PO")) {
+
+        } else if (auth.getRoles().contains("BDO")) {
+
+        } else {
+
+        }
         switch (option) {
             case "dashboard":
-
                 dir = "business/index";
                 break;
 
+            case "analytics":
+                red.addAttribute("portfolios", forlioService.getAll());
+                red.addAttribute("users", userService.findAll());
+                dir = "business/analytics";
+                break;
+
             case "collections":
+                red.addAttribute("collection", collectionService.getAll());
                 red.addAttribute("groups", groupService.getAll());
-                red.addAttribute("collection", new GroupCollection());
+
+                for (GroupCollection col : collectionService.getAll()) {
+                    red.addAttribute("officer", userService.findByEmail(col.getPostedBy()));
+                    red.addAttribute("group", groupService.getById(col.getGroupId()));
+                }
+
                 dir = "business/collections";
                 break;
 
             case "loans":
+                red.addAttribute("clients", clientService.getAll());
+                red.addAttribute("groups", groupService.getAll());
+                red.addAttribute("branches", branchService.findAll());
+                red.addAttribute("loanApplications", loanService.getAll());
+                dir = "business/loans";
+                break;
+
+            case "approvals":
+                red.addAttribute("clients", clientService.getAll());
+                red.addAttribute("groups", groupService.getAll());
+                red.addAttribute("branches", branchService.findAll());
+                red.addAttribute("loanApplications", loanService.getAll());
+                dir = "business/loans";
+                break;
+
+            case "disbursement":
                 red.addAttribute("clients", clientService.getAll());
                 red.addAttribute("groups", groupService.getAll());
                 red.addAttribute("branches", branchService.findAll());
@@ -133,6 +184,11 @@ public class BusinessController {
                 redirectAttribute.addFlashAttribute(
                         "message", "Loan application approved successfully.");
                 break;
+            case "disburse":
+                loanService.disburse(id, existing);
+                redirectAttribute.addFlashAttribute(
+                        "message", "Loan application disbursed successfully.");
+                break;
             case "delete":
                 loanService.delete(id);
                 redirectAttribute.addFlashAttribute(
@@ -149,36 +205,35 @@ public class BusinessController {
     @GetMapping("/collections/groups/{groupId}")
     public String showGroup(
             @PathVariable Long groupId, @AuthenticationPrincipal CustomUserDetails auth,
-            Model model, GroupCollection collection, RedirectAttributes red) {
-        userService.getPrices(auth, red);
-        var group = groupService.getById(groupId);
+            Model model) {
+        userService.getPrices(auth, model);
+        Group group = groupService.getById(groupId);
 
-        GroupCollection request = new GroupCollection();
-        request.setGroupId(groupId);
-        request.setPostedBy(auth.getEmail());
-        request.setPaymentReference(collection.getPaymentReference());
-        request.setPaymentAmount(collection.getPaymentAmount());
-        request.setPaymentMethod(collection.getPaymentMethod());
+        GroupCollection collection = new GroupCollection();
+        List<MemberCollection> allocations = clientService
+                .getByGroup(group)
+                .stream()
+                .map(client -> {
+                    MemberCollection line = new MemberCollection();
+                    line.setMemberId(client.getId());
+                    line.setSavingsAmount(BigDecimal.ZERO);
+                    line.setLoanAmount(BigDecimal.ZERO);
+                    return line;
+                })
+                .toList();
 
-        clientService.getByGroup(group).forEach(member -> {
-            MemberCollection line = new MemberCollection();
-            line.setMemberId(member.getId());
-            request.getMembers().add(line);
-        });
-
-        model.addAttribute("groups", groupService.getAll());
-        model.addAttribute("selectedGroup", group);
-        model.addAttribute("collection", request);
+        collection.setMembers(new ArrayList<>(allocations));
+        model.addAttribute("clients", clientService.getByGroup(group));
+        model.addAttribute("officers", userService.findAll());
+        model.addAttribute("group", group);
+        model.addAttribute("collection", collection);
 
         return "business/group-collection";
     }
 
-    @PostMapping("/collections/groups")
+    @PostMapping("/collections/group")
     public String postCollection(@Valid @ModelAttribute("collection") GroupCollection request,
-            BindingResult bindingResult,
-            Model model,
-            @AuthenticationPrincipal CustomUserDetails user,
-            RedirectAttributes redirectAttributes) {
+            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute(
@@ -189,26 +244,21 @@ public class BusinessController {
                         groupService.getById(
                                 request.getGroupId()));
             }
-            return "collections/group-collection";
         }
 
         try {
-            String postedBy = user != null
-                    ? user.getEmail()
-                    : null;
 
-            if (postedBy == null) {
+            if (request.getPostedBy() == null) {
                 throw new IllegalStateException(
                         "Authentication is required to post collections.");
             }
 
-            collectionService.postCollection(request, postedBy);
+            collectionService.postCollection(request, request.getPostedBy());
 
             redirectAttributes.addFlashAttribute(
                     "message",
                     "Group collection posted successfully.");
-
-            return "redirect:/collections/groups";
+            return "redirect:/business/collections";
 
         } catch (IllegalArgumentException ex) {
             bindingResult.reject("collection.invalid", ex.getMessage());
@@ -223,15 +273,15 @@ public class BusinessController {
                     groupService.getById(request.getGroupId()));
         }
 
-        return "redirect:/business/collections";
+        return "redirect: /business/collections/groups/" + request.getGroupId();
     }
 
-    @GetMapping("/dues")
-    public String dues(
-            @RequestParam(defaultValue = "all") String filter,
-            @RequestParam(defaultValue = "30") int days,
-            Model model, RedirectAttributes red, @AuthenticationPrincipal CustomUserDetails auth) {
-        userService.getPrices(auth, red);
+    @GetMapping("/loans/repayments")
+    public String repayments(
+            @RequestParam(defaultValue = "overdue") String filter,
+            @RequestParam(defaultValue = "1") int days,
+            Model model, @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, model);
         LocalDate today = LocalDate.now();
 
         LocalDate startDate;
@@ -250,23 +300,111 @@ public class BusinessController {
                 startDate = today.plusDays(1);
                 endDate = today.plusDays(Math.max(1, Math.min(days, 365)));
             }
+            case "all" -> {
+                startDate = null;
+                endDate = today.plusDays(Math.max(1, Math.min(days, 365)));
+            }
             default -> {
                 startDate = null;
-                endDate = null;
+                endDate = today;
             }
         }
 
         List<Repayments> dues;
+        List<LoanRepaymentSummary> summary = null;
+        Map<Long, Long> inst = new HashMap<>();
 
         if ("overdue".equalsIgnoreCase(filter)) {
             dues = repaymentService.findOverdue(today);
+            summary = repaymentService.getLoanSummaries(today);
+        } else if ("all".equalsIgnoreCase(filter)) {
+            dues = repaymentService.findDuesUp(endDate);
+            summary = repaymentService.getLoanSummaries(endDate);
         } else if (startDate != null && endDate != null) {
             dues = repaymentService.findUnpaidBetween(startDate, endDate);
+            summary = repaymentService.getLoanSummaries(endDate);
         } else {
-            dues = repaymentService.findAllUnpaid();
+            dues = repaymentService.findDuesUp(today);
+            summary = repaymentService.getLoanSummaries(today);
+        }
+
+        for (Repayments r : dues) {
+            inst.put(
+                    r.getLoan().getId(),
+                    repaymentService.getCountByLoan(r.getLoan()));
         }
 
         model.addAttribute("dues", dues);
+        model.addAttribute("summary", summary);
+        model.addAttribute("inst", inst);
+        model.addAttribute("filter", filter);
+        model.addAttribute("days", days);
+        model.addAttribute("today", today);
+
+        return "business/repayments";
+    }
+
+    @GetMapping("/loans/dues")
+    public String dues(
+            @RequestParam(defaultValue = "overdue") String filter,
+            @RequestParam(defaultValue = "1") int days,
+            Model model, @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, model);
+        LocalDate today = LocalDate.now();
+
+        LocalDate startDate;
+        LocalDate endDate;
+
+        switch (filter.toLowerCase()) {
+            case "overdue" -> {
+                startDate = null;
+                endDate = today.minusDays(1);
+            }
+            case "today" -> {
+                startDate = today;
+                endDate = today;
+            }
+            case "forecast" -> {
+                startDate = today.plusDays(1);
+                endDate = today.plusDays(Math.max(1, Math.min(days, 365)));
+            }
+            case "all" -> {
+                startDate = null;
+                endDate = today.plusDays(Math.max(1, Math.min(days, 365)));
+            }
+            default -> {
+                startDate = null;
+                endDate = today;
+            }
+        }
+
+        List<Loan> dues;
+        Map<Long, Long> inst = new HashMap<>();
+        Map<Long, LoanRepaymentSummary> summary = new HashMap<>();
+
+        if ("overdue".equalsIgnoreCase(filter)) {
+            dues = loanService.getByOverdue(today);
+        } else if ("all".equalsIgnoreCase(filter)) {
+            dues = loanService.getByOverdue(endDate);
+        } else if (startDate != null && endDate != null) {
+            dues = loanService.getByOverdueBetween(startDate, endDate);
+        } else {
+            dues = loanService.getByOverdue(today);
+        }
+
+        for (Loan l : dues) {
+            inst.put(
+                    l.getId(),
+                    repaymentService.getCountByLoan(l));
+
+            summary.put(
+                    l.getId(),
+                    repaymentService.getLoanRepaymentSummary(l, endDate));
+        }
+
+        model.addAttribute("dues", dues);
+        model.addAttribute("summary", summary);
+        model.addAttribute("inst", inst);
         model.addAttribute("filter", filter);
         model.addAttribute("days", days);
         model.addAttribute("today", today);
@@ -274,4 +412,31 @@ public class BusinessController {
         return "business/overdues";
     }
 
+    @GetMapping("/loans/arrears")
+    public String arrears(
+            Model model, @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, model);
+        LocalDate today = LocalDate.now();
+
+        List<Loan> dues = loanService.getByOverdue(today);
+        Map<Long, Long> inst = new HashMap<>();
+        Map<Long, LoanRepaymentSummary> summary = new HashMap<>();
+            
+
+        for (Loan l : dues) {
+            inst.put(
+                    l.getId(),
+                    repaymentService.getCountByLoan(l));
+
+            summary.put(
+                    l.getId(),
+                    repaymentService.getLoanRepaymentSummary(l, today));
+        }
+
+        model.addAttribute("dues", dues);
+        model.addAttribute("summary", summary);
+        model.addAttribute("inst", inst);
+
+        return "business/arrears";
+    }
 }

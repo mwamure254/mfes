@@ -1,16 +1,16 @@
 package com.mfano.mfes.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.mfano.mfes.auth.models.Branch;
 import com.mfano.mfes.models.Client;
 import com.mfano.mfes.models.Loan;
 import com.mfano.mfes.models.Loan.LoanStatus;
-import com.mfano.mfes.models.Repayments;
 import com.mfano.mfes.repositories.LoanRepository;
 
 import jakarta.transaction.Transactional;
@@ -100,4 +100,23 @@ public class LoanService {
         return loanRepository.findByClient(c);
     }
 
+    public List<Loan> getByOverdue(LocalDate date) {
+        return loanRepository.findLoansWithOverdueInstallments(date);
+    }
+
+    public List<Loan> getByOverdueBetween(LocalDate start, LocalDate end) {
+        return loanRepository.findOverdueBetween(start, end);
+    }
+
+    public long countPendingLoansCreatedToday(String status) {
+        LocalDate today = LocalDate.now(ZoneId.of("Africa/Nairobi"));
+
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime startOfTomorrow = today.plusDays(1).atStartOfDay();
+
+        return loanRepository.countLoansCreatedTodayByStatus(
+                status,
+                startOfDay,
+                startOfTomorrow);
+    }
 }

@@ -27,6 +27,11 @@ public class Client extends BaseObject{
     private String phone;
     private String document;
     private boolean active = false;
+
+    @DecimalMin("0.00")
+    private BigDecimal msa = BigDecimal.ZERO;
+    @DecimalMin("0.00")
+    private BigDecimal mla = BigDecimal.ZERO;
     
     @Column(precision = 9, scale = 6)
     @DecimalMin("-90.0") @DecimalMax("90.0")

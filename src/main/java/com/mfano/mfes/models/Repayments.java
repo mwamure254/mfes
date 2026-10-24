@@ -47,12 +47,10 @@ public class Repayments {
     private BigDecimal interestAmount;
 
     @Column(precision = 12, scale = 2)
-    private BigDecimal totalAmount; // principal + interest
+    private BigDecimal totalAmount; // principal + interest + penalty
 
     @Column(precision = 12, scale = 2)
     private BigDecimal amountPaid = BigDecimal.ZERO;
-    @Column(precision = 12, scale = 2)
-    private BigDecimal amountDue = totalAmount;
 
     @Column(precision = 12, scale = 2)
     private BigDecimal penalty = BigDecimal.ZERO;
@@ -64,7 +62,7 @@ public class Repayments {
     private LocalDate paidDate;
 
     public BigDecimal getTotalPayable() {
-        BigDecimal unpaid = amountDue.subtract(amountPaid)
+        BigDecimal unpaid = totalAmount.subtract(amountPaid)
                 .max(BigDecimal.ZERO);
 
         return unpaid.add(

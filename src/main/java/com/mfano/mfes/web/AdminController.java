@@ -55,6 +55,19 @@ public class AdminController {
         userService.getPrices(auth, red);
 
         String dir = "redirect:/";
+        if (auth.getRoles().contains("ADMIN")) {
+
+        } else if (auth.getRoles().contains("CEO")) {
+
+        } else if (auth.getRoles().contains("MANAGER")) {
+
+        } else if (auth.getRoles().contains("PO")) {
+
+        } else if (auth.getRoles().contains("BDO")) {
+
+        } else {
+
+        }
         switch (option) {
             case "dashboard":
                 red.addAttribute("users", userService.findAll());

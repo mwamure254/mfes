@@ -61,9 +61,9 @@
 
                                 <img th:src="${author.image == null or author.image.isEmpty()}
         ? @{/image/rocket.svg}
-        : @{/profiles/{filename}(filename=${author.image})}" alt="MY" class="rounded-circle" height="420" width="80%">
+        : @{/profiles/{filename}(filename=${author.image})}" alt="MY" height="420" width="80%">
 
-                                <div class="pt-2">
+                                <div class="pt-2" sec:authorize="hasAnyRole('CEO')">
                                     <a data-bs-toggle="modal" data-bs-target="#image" class="btn btn-primary btn-sm"
                                         title="Upload new profile image"><i class="bi bi-upload"></i></a>
                                     <a data-bs-toggle="modal" data-bs-target="#del" class="btn btn-danger btn-sm"
@@ -176,27 +176,93 @@
 
                             <!-- SEARCH -->
                             <div class="card borde-0">
-                                <div class="input-group p-2">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-search"></i>
-                                    </span>
+                                <div class="card-header py-3">
+                                    <div
+                                        class="d-flex flex-column flex-md-row align-items-md-start justify-content-between">
 
-                                    <input type="text" id="tableSearch" class="form-control"
-                                        placeholder="Search portfolios...">
+                                        <!-- SEARCH -->
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
 
+                                                    <span class="input-group-text bg-white">
+                                                        <i class="bi bi-search text-muted"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text" id="tableSearch" class="form-control"
+                                                    placeholder="Search portfolios ..."
+                                                    aria-label="Search loans" aria-describedby="tableSearch" />
+
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 mt-md-0 d-flex flex-wrap">
+                                            <!-- Export -->
+                                            <div class="btn-group mr-2 mb-2">
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bi bi-download bi-sm mr-1"></i>Export
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                                    <h6 class="dropdown-header">Export Records</h6>
+                                                    <a class="dropdown-item"
+                                                        th:href="@{/records/documents/export/excel(filter=${filter})}"><i
+                                                            class="bi bi-file-excel fa-sm fa-fw mr-2 text-success"></i>Excel</a>
+                                                    <a class="dropdown-item"
+                                                        th:href="@{/records/documents/export/pdf(filter=${filter})}"><i
+                                                            class="bi bi-file-pdf fa-sm fa-fw mr-2 text-danger"></i>PDF</a>
+                                                    <a class="dropdown-item"
+                                                        th:href="@{/records/documents/export/word(filter=${filter})}"><i
+                                                            class="bi bi-file-word fa-sm fa-fw mr-2 text-primary"></i>WORD</a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Filter -->
+                                            <div class="btn-group mr-2 mb-2 px-2">
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-warning dropdown-toggle"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bi bi-filter bi-sm mr-1"></i>Filter
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                                    <h6 class="dropdown-header">Filter By Branch</h6>
+                                                    <a class="dropdown-item"
+                                                        th:href="@{/records/documents(filter='today')}">Today</a>
+                                                    <a class="dropdown-item"
+                                                        th:href="@{/records/documents(filter='month')}">This
+                                                        Month</a>
+                                                    <a class="dropdown-item"
+                                                        th:href="@{/records/documents(filter='year')}">This
+                                                        Year</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item" th:href="@{/records/documents}">All
+                                                        Entries</a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Add Button -->
+                                            <button class="btn btn-outline-primary mr-2 mb-2" data-bs-toggle="modal"
+                                                data-bs-target="#addModal">
+                                                <i class="bi bi-person"></i>
+                                                Create Portfolio
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- USERS TABLE -->
-                                <div class="card border-0 shadow-sm">
+                                <div card-body>
                                     <div class="table-responsive p-2" style="max-height: 500px; overflow-y: auto;">
                                         <table class="table table-hover align-middle mb-0" id="table">
-                                            <thead class="table-light sticky-top">
+                                            <thead class="table-light">
                                                 <tr>
                                                     <th>#</th>
+                                                    <th>UIN</th>
                                                     <th>Portfolio</th>
                                                     <th>BDO</th>
                                                     <th>Capacity</th>
                                                     <th>Target</th>
+                                                    <th>OLB</th>
                                                     <th>Status</th>
                                                     <th class="text-end" sec:authorize="hasAnyRole('MANAGER', 'CEO')">
                                                         Actions
@@ -210,6 +276,11 @@
                                                     <td th:text="${stat.count}">
                                                         1
                                                     </td>
+                                                    <!-- Reference -->
+                                                    <td th:text="${p.reference}">
+                                                        1
+                                                    </td>
+
                                                     <!-- USER -->
                                                     <td>
                                                         <div class="d-flex align-items-center">
@@ -222,18 +293,18 @@
                                                     </td>
 
                                                     <!-- USER -->
-                                                    <td>
-                                                        <span class="badge bg-primary me-1" th:text="${p.user?.fin}">
-                                                        </span>
+                                                    <td th:text="${p.user?.fin + ' ' + p.user?.lan}">
+                                                        Bdo
                                                     </td>
                                                     <!-- CAPACITY -->
                                                     <td>
                                                         <span th:text="${p.capacity}">
                                                         </span>
                                                     </td>
-
                                                     <!-- TARGET -->
                                                     <td th:text="${p.sales}"></td>
+                                                    <!-- OLB -->
+                                                    <td>Coming</td>
                                                     <!-- STATUS -->
                                                     <td>
                                                         <span th:if="${p.active}" class="badge bg-success">
@@ -382,7 +453,7 @@
                                                                         <!-- USER -->
                                                                         <div class="mb-3 col-12">
                                                                             <label class="form-label">
-                                                                                Assign User
+                                                                                Assign Officer
                                                                             </label>
                                                                             <select class="form-control" name="user"
                                                                                 required>
@@ -436,7 +507,7 @@
 
                                                 <!-- EMPTY -->
                                                 <tr th:if="${#lists.isEmpty(portfolios)}">
-                                                    <td colspan="7" class="text-center py-5">
+                                                    <td colspan="8" class="text-center py-5">
                                                         <i class="bi bi-people fs-1 text-muted"></i>
                                                         <h5 class="mt-3">
                                                             No portfolio data found

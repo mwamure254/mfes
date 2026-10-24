@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<th:block th:replace="~{partials/_header ::
-    common_header(~{::title/text()}, ~{::link}, ~{::meta})}">
-    <title>MFES | Group Collections</title>
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()}, ~{::link}, ~{::meta})}">
+    <title>MFES | Collection</title>
     <meta name="description" content="Record group member savings and loan repayments">
     <meta name="author" content="mfano">
 </th:block>
@@ -18,26 +17,17 @@
         <div class="pagetitle mb-4">
             <h1>
                 <i class="bi bi-people me-2 text-primary"></i>
-                Group Collections
+                Group Collection
             </h1>
-            <p class="text-muted mb-0">
-                Allocate collections to individual savings and loan accounts.
-            </p>
+            <p class="text-muted mb-0">Allocate collections to individual savings and loan accounts.</p>
         </div>
 
-        <div th:if="${#fields != null}" class="d-none"></div>
-
-        <div class="alert alert-danger" th:if="${#fields.hasErrors('collection.*')}">
-            Please correct the collection details and try again.
-        </div>
-
-        <form th:action="@{/collections/groups}" th:object="${collection}" method="post">
-
-           <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+        <form th:action="@{/business/collections/group}" th:object="${collection}" method="post">
+            <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
 
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0">Collection details</h5>
+                    <h5 class="mb-0">Collection Details</h5>
                 </div>
 
                 <div class="card-body">
@@ -46,42 +36,38 @@
                         <div class="col-md-4">
                             <label class="form-label">Group</label>
                             <select class="form-select" th:field="*{groupId}" required>
-                                <option value="">Select group</option>
-                                <option th:each="g : ${groups}" th:value="${g.id}" th:text="${g.name}">
-                                </option>
+                                <option th:value="${group.id}" th:text="${group.name}"></option>
                             </select>
                             <div class="text-danger small" th:errors="*{groupId}"></div>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Collection Aount</label>
-                            <input type="date" class="form-control" th:field="*{paymentAmount}" required>
-                            <div class="text-danger small" th:errors="*{paymentAmount}"></div>
+                            <label class="form-label">Collected By</label> <!-- FIXED: was paymentAmount -->
+                            <select class="form-select" th:field="*{postedBy}" required>
+                                <option value="">Select Officer</option>
+                                <option th:each="g : ${officers}" th:value="${g.email}" th:text="${g.email}"></option>
+                            </select>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Payment method</label>
-                            <select class="form-select" th:field="*{paymentMethod}" required>
+                            <label class="form-label">Total Amount</label> <!-- FIXED: was date -->
+                            <input type="number" step="0.01" min="0" class="form-control" th:field="*{pa}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-select" th:field="*{pm}" required>
                                 <option value="CASH">Cash</option>
                                 <option value="MPESA">M-Pesa</option>
-                                <option value="MPESA">Airtel Money</option>
-                                <option value="BANK">Bank</option>
+                                <option value="AIRTEL">Airtel Money</option> <!-- FIXED duplicate -->
+                                <option value="BANK">Card</option>
                             </select>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">
-                                Payment reference
-                            </label>
-                            <input type="text" class="form-control" th:field="*{paymenetReference}" maxlength="100"
+                            <label class="form-label">Payment Reference</label> <!-- FIXED typo -->
+                            <input type="text" class="form-control" th:field="*{pr}" maxlength="100"
                                 placeholder="Receipt or transaction reference">
-                        </div>
-
-                        <div class="col-md-6 d-flex align-items-end">
-                            <button type="button" class="btn btn-outline-primary" id="loadGroupBtn">
-                                <i class="bi bi-arrow-repeat me-1"></i>
-                                Load group members
-                            </button>
                         </div>
 
                     </div>
@@ -90,10 +76,8 @@
 
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-1">Member allocations</h5>
-                    <small class="text-muted">
-                        Enter the amounts actually received for each member.
-                    </small>
+                    <h5 class="mb-1">Member Allocations</h5>
+                    <small class="text-muted">Enter the actually amount for each member.</small>
                 </div>
 
                 <div class="card-body p-0">
@@ -103,53 +87,42 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Member</th>
+                                    <th>Reference</th>
                                     <th class="text-end">Savings (Ksh)</th>
-                                    <th class="text-end">Loan repayment (Ksh)</th>
+                                    <th class="text-end">Loan Repayment (Ksh)</th>
                                     <th class="text-end">Total (Ksh)</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr th:each="member, stat : *{members}">
-                                    
+                                <tr th:each="member, stat : ${clients}">
+                                    <td th:text="${stat.count}">1</td>
+
                                     <td>
                                         <input type="hidden" th:field="*{members[__${stat.index}__].memberId}">
+                                        <span class="fw-bold" th:text="${member.fin + ' ' + member.lan}">John
+                                            Doe</span>
+                                    </td>
+                                    <td th:text="${member.reference}">12345678</td>
 
-                                        <span th:text="${member.memberId}">
-                                            Member ID
-                                        </span>
-                                    </td>
-
                                     <td>
-                                        <span th:text="${stat.index}">
-                                           #
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span th:text="${clients.id == members[__${stat.index}__].memberId ? clients.fin + ' ' + clients.lan : 'member'}">
-                                           Member
-                                        </span>
-                                    </td>
-                                    
-                                    <td>
-                                        <input type="number" min="0" step="0.01"
+                                        <input type="number" min="0" step="0.01" value="0"
                                             class="form-control text-end amount savings"
                                             th:field="*{members[__${stat.index}__].savingsAmount}">
                                     </td>
 
                                     <td>
-                                        <input type="number" min="0" step="0.01"
+                                        <input type="number" min="0" step="0.01" value="0"
                                             class="form-control text-end amount loan"
                                             th:field="*{members[__${stat.index}__].loanAmount}">
                                     </td>
 
-                                    <td class="text-end fw-bold member-total">
-                                        0.00
-                                    </td>
+                                    <td class="text-end fw-bold member-total">0.00</td>
                                 </tr>
 
-                                <tr th:if="${#lists.isEmpty(collection.members)}">
-                                    <td colspan="4" class="text-center text-muted py-4">
+                                <tr th:if="${#lists.isEmpty(clients)}">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <!-- FIXED colspan -->
                                         Select a group and load its members.
                                     </td>
                                 </tr>
@@ -157,7 +130,7 @@
 
                             <tfoot class="table-light">
                                 <tr>
-                                    <th>Total collection</th>
+                                    <th colspan="3" class="text-end">Totals:</th>
                                     <th class="text-end" id="savingsTotal">0.00</th>
                                     <th class="text-end" id="loanTotal">0.00</th>
                                     <th class="text-end" id="grandTotal">0.00</th>
@@ -169,25 +142,19 @@
             </div>
 
             <div class="d-flex justify-content-end gap-2 mb-4">
-                <button type="reset" class="btn btn-outline-secondary">
-                    Clear
-                </button>
-
+                <button type="reset" class="btn btn-outline-warning">Clear</button>
                 <button type="submit" class="btn btn-primary" id="postBtn">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Post collection
+                    <i class="bi bi-check-circle me-1"></i> Post Collection
                 </button>
             </div>
 
         </form>
     </main>
 
+    <th:block th:insert="~{partials/_footer}" />
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const money = n => n.toLocaleString('en-KE', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+            const money = n => n.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             function updateTotals() {
                 let savingsTotal = 0;
@@ -196,7 +163,6 @@
                 document.querySelectorAll('#membersTable tbody tr').forEach(row => {
                     const savingsInput = row.querySelector('.savings');
                     const loanInput = row.querySelector('.loan');
-
                     if (!savingsInput || !loanInput) return;
 
                     const savings = Math.max(0, Number(savingsInput.value) || 0);
@@ -209,36 +175,19 @@
                     if (totalCell) totalCell.textContent = money(savings + loan);
                 });
 
-                document.getElementById('savingsTotal').textContent =
-                    money(savingsTotal);
-                document.getElementById('loanTotal').textContent =
-                    money(loanTotal);
-                document.getElementById('grandTotal').textContent =
-                    money(savingsTotal + loanTotal);
+                document.getElementById('savingsTotal').textContent = money(savingsTotal);
+                document.getElementById('loanTotal').textContent = money(loanTotal);
+                const grand = savingsTotal + loanTotal;
+                document.getElementById('grandTotal').textContent = money(grand);
+                document.querySelector('[name="totalAmount"]').value = grand.toFixed(2); // update hidden total
             }
 
             document.querySelectorAll('.amount').forEach(input => {
                 input.addEventListener('input', updateTotals);
             });
 
-            document.getElementById('loadGroupBtn').addEventListener('click', () => {
-                const groupId = document.querySelector('[name="groupId"]').value;
-
-                if (!groupId) {
-                    alert('Please select a group first.');
-                    return;
-                }
-
-                window.location.href =
-                    '/collections/groups/' + encodeURIComponent(groupId);
-            });
-
             document.querySelector('form').addEventListener('submit', event => {
-                const total = Number(
-                    document.getElementById('grandTotal').textContent
-                        .replace(/,/g, '')
-                );
-
+                const total = Number(document.getElementById('grandTotal').textContent.replace(/,/g, ''));
                 if (total <= 0) {
                     event.preventDefault();
                     alert('Enter at least one positive contribution.');

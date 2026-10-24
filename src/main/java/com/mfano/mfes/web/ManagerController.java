@@ -49,6 +49,19 @@ public class ManagerController {
         userService.getPrices(auth, red);
 
         String dir = "redirect:/";
+        if (auth.getRoles().contains("ADMIN")) {
+
+        } else if (auth.getRoles().contains("CEO")) {
+
+        } else if (auth.getRoles().contains("MANAGER")) {
+
+        } else if (auth.getRoles().contains("PO")) {
+
+        } else if (auth.getRoles().contains("BDO")) {
+
+        } else {
+
+        }
         switch (option) {
             case "dashboard":
                 dir = "manager/index";
@@ -118,6 +131,9 @@ public class ManagerController {
             redirectAttributes.addFlashAttribute(
                     "error", "Client phone already exists.");
 
+        } else if (clientService.getByNumber(client.getIdNumber()) != null) {
+            redirectAttributes.addFlashAttribute(
+                    "error", "Client ID already exists.");
         } else {
             clientService.save(client);
 

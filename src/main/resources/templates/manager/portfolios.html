@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <!-- Custom meta data for this template-->
+    <meta name="description" content="meo home page">
+    <meta name="author" content="mfano">
+    <!-- Custom title for this page-->
+    <title>MFES | Organization</title>
+    <!-- Custom styles for this page-->
+</th:block>
+
+<body class="profile-page">
+
+    <!-- ======= Header ======= -->
+    <th:block th:insert="~{partials/_topbar}" />
+    <!-- =====End Header===== -->
+
+    <!-- ======= Sidebar ======= -->
+    <th:block th:insert="~{partials/_sidebar}" />
+    <!-- =====End Sidebar=====-->
+
+    <main id="main" class="main">
+
+        <div class="pagetitle my-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-pie-chart me-2 text-primary"></i>
+                    Porfolios
+                </h1>
+                <p class="mb-0 text-muted small">
+                    Organization and personal portfolios.
+                </p>
+            </div>
+
+        </div><!-- End Page Title -->
+
+        <div class="card">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1">
+                        <i class="bi bi-folder2-open"></i>
+                        Portfolios
+                    </h3>
+                    <p class="text-muted mb-0">
+                        Manage portfolios and staff grouping
+                    </p>
+                </div>
+
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+
+                    <i class="bi bi-person"></i>
+                    Create Portfolio
+
+                </button>
+
+            </div>
+
+            <!-- SEARCH -->
+            <div class="card borde-0">
+                <div class="card-header py-3">
+                    <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between">
+
+                        <!-- SEARCH -->
+                        <div class="col-md-6">
+                            <div class="input-group">s
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="tableSearch" class="form-control"
+                                    placeholder="Search portfolios ..." aria-label="Search loans"
+                                    aria-describedby="tableSearch" />
+
+                            </div>
+                        </div>
+                        <div class="mt-3 mt-md-0 d-flex flex-wrap">
+                            <!-- Export -->
+                            <div class="btn-group mr-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-download bi-sm mr-1"></i>Export
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <h6 class="dropdown-header">Export Records</h6>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/excel(filter=${filter})}"><i
+                                            class="bi bi-file-excel fa-sm fa-fw mr-2 text-success"></i>Excel</a>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/pdf(filter=${filter})}"><i
+                                            class="bi bi-file-pdf fa-sm fa-fw mr-2 text-danger"></i>PDF</a>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/word(filter=${filter})}"><i
+                                            class="bi bi-file-word fa-sm fa-fw mr-2 text-primary"></i>WORD</a>
+                                </div>
+                            </div>
+
+                            <!-- Filter -->
+                            <div class="btn-group mr-2 mb-2 px-2">
+                                <button type="button" class="btn btn-sm btn-outline-warning dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-filter bi-sm mr-1"></i>Filter
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <h6 class="dropdown-header">Filter By Branch</h6>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='today')}">Today</a>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='month')}">This
+                                        Month</a>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='year')}">This
+                                        Year</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" th:href="@{/records/documents}">All
+                                        Entries</a>
+                                </div>
+                            </div>
+
+                            <!-- Add Button -->
+                            <button class="btn btn-outline-primary mr-2 mb-2" data-bs-toggle="modal"
+                                data-bs-target="#addModal">
+                                <i class="bi bi-person"></i>
+                                Create Portfolio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USERS TABLE -->
+                <div card-body>
+                    <div class="table-responsive p-2" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" id="table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>UIN</th>
+                                    <th>Portfolio</th>
+                                    <th>BDO</th>
+                                    <th>Capacity</th>
+                                    <th>Target</th>
+                                    <th>OLB</th>
+                                    <th>Status</th>
+                                    <th class="text-end" sec:authorize="hasAnyRole('MANAGER', 'CEO')">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="p, stat : ${portfolios}" th:id="'p-' + ${p.id}">
+                                    <!-- ID -->
+                                    <td th:text="${stat.count}">
+                                        1
+                                    </td>
+                                    <!-- Reference -->
+                                    <td th:text="${p.reference}">
+                                        1
+                                    </td>
+
+                                    <!-- USER -->
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <!-- Portfolio name -->
+                                            <a class="fw-bold" th:text="${p.name}">
+                                                portfolio
+                                            </a>
+
+                                        </div>
+                                    </td>
+
+                                    <!-- USER -->
+                                    <td th:text="${p.user?.fin + ' ' + p.user?.lan}">
+                                        Bdo
+                                    </td>
+                                    <!-- CAPACITY -->
+                                    <td>
+                                        <span th:text="${p.capacity}">
+                                        </span>
+                                    </td>
+                                    <!-- TARGET -->
+                                    <td th:text="${p.sales}"></td>
+                                    <!-- OLB -->
+                                    <td>Coming</td>
+                                    <!-- STATUS -->
+                                    <td>
+                                        <span th:if="${p.active}" class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i>
+                                            Active
+                                        </span>
+                                        <span th:unless="${p.active}" class="badge bg-secondary">
+                                            <i class="bi bi-x-circle"></i>
+                                            Inactive
+                                        </span>
+                                    </td>
+                                    <!-- ACTIONS -->
+                                    <td class="text-end" sec:authorize="hasAnyRole('MANAGER', 'CEO')">
+                                        <div class="btn-group">
+                                            <!-- EDIT -->
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${p.id}"
+                                                title="Edit">
+
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <!-- TOGGLE -->
+                                            <form th:action="@{/manager/portfolios/toggle/{id}(id=${p.id})}"
+                                                method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-warning" th:title="${p.active}
+                                            ? 'Deactivate'
+                                            : 'Activate'">
+                                                    <i th:class="${p.active}
+                                        ? 'bi bi-toggle-on'
+                                        : 'bi bi-toggle-off'">
+                                                    </i>
+                                                </button>
+                                            </form>
+                                            <!-- DELETE -->
+                                            <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                th:data-bs-target="'#deleteModal' + ${p.id}" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+
+                                        <!-- DELETE MODAL -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${p.id}" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Delete Portfolio
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body text-start">
+                                                        Are you sure you want to delete
+                                                        <strong th:text="${p.name}">
+                                                            Folio
+                                                        </strong> portfolio?
+                                                        <br>
+                                                        <small class="text-danger">
+                                                            This action cannot be undone.
+                                                        </small>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">
+                                                            Cancel
+                                                        </button>
+                                                        <form th:action="@{/manager/portfolios/delete/{id}(id=${p.id})}"
+                                                            method="post">
+                                                            <button type="submit" class="btn btn-danger">
+                                                                <i class="bi bi-trash"></i>
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- EDIT MODAL -->
+                                    <div class="modal fade" th:id="'editModal' + ${p.id}" tabindex="-1"
+                                        aria-hidden="true">
+
+                                        <div class="modal-dialog modal-md modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form th:action="@{/manager/portfolios/update/{id}(id=${p.id})}"
+                                                    method="post">
+                                                    <!-- HEADER -->
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                            Edit Portfolio
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- BODY -->
+                                                    <div class="modal-body">
+                                                        <!-- NAME -->
+                                                        <div class="mb-3">
+                                                            <label class="form-label">
+                                                                Name
+                                                            </label>
+
+                                                            <input type="text" name="name" class="form-control"
+                                                                placeholder="Name" th:value="${p.name}" required>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <!-- FIRST NAME -->
+                                                            <div class="mb-3 col-6">
+                                                                <label class="form-label">
+                                                                    Capacity
+                                                                </label>
+
+                                                                <input type="number" name="capacity"
+                                                                    class="form-control" placeholder="Profile capacity"
+                                                                    th:value="${p.capacity}" required>
+                                                            </div>
+
+                                                            <!-- LAST NAME -->
+                                                            <div class="mb-3 col-6">
+                                                                <label class="form-label">
+                                                                    Target
+                                                                </label>
+                                                                <input type="number" name="sales" class="form-control"
+                                                                    placeholder="Portfolio target" th:value="${p.sales}"
+                                                                    required>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- USER -->
+                                                        <div class="mb-3 col-12">
+                                                            <label class="form-label">
+                                                                Assign Officer
+                                                            </label>
+                                                            <select class="form-control" name="user" required>
+                                                                <option value="">
+                                                                    SELECT
+                                                                </option>
+
+                                                                <option th:each="u : ${users}" th:value="${u.id}"
+                                                                    th:selected="${p.user == u}" th:text="${u.email}">
+                                                                </option>
+                                                            </select>
+                                                        </div>
+
+                                                        <!-- DESCRIPTION -->
+                                                        <div class="mb-3">
+                                                            <label class="form-label">
+                                                                Description
+                                                            </label>
+
+                                                            <textarea name="description" class="form-control"
+                                                                th:text="${p.description}" rows="3" maxlength="200"
+                                                                placeholder="Leave blank to keep current password"></textarea>
+                                                            <small class="text-muted">
+                                                                Maximum of 200 characters
+                                                                description.
+                                                            </small>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- FOOTER -->
+                                                    <div class="modal-footer">
+                                                        <button type="reset" class="btn btn-warning"
+                                                            data-bs-dismiss="modal">
+                                                            Clear
+                                                        </button>
+
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="bi bi-save"></i>
+                                                            Save
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tr>
+
+                                <!-- EMPTY -->
+                                <tr th:if="${#lists.isEmpty(portfolios)}">
+                                    <td colspan="8" class="text-center py-5">
+                                        <i class="bi bi-people fs-1 text-muted"></i>
+                                        <h5 class="mt-3">
+                                            No portfolio data found
+                                        </h5>
+                                        <p class="text-muted">
+                                            Add your first portfolio to get started.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!--End Portfolio-->
+        </div>
+    </main><!-- End #main -->
+
+    <!-- ADD MODAL -->
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/manager/portfolios/save}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-plus-circle"></i>
+                            Add Portfolio
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- NAME -->
+                        <div class="mb-3 col-md-12">
+                            <label class="form-label">
+                                Portfolio Name
+                            </label>
+                            <input name="name" class="form-control" type="text" placeholder="Name" required />
+                        </div>
+                        <div class="row">
+                            <!-- FIN -->
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">
+                                    Capacity
+                                </label>
+                                <input type="number" name="capacity" class="form-control" placeholder="Capacity"
+                                    required>
+                            </div>
+                            <!-- LAN -->
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label">
+                                    Target
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" name="sales" class="form-control" placeholder="Target"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- USER- -->
+                        <div class="mb-3 col-md-12">
+                            <label class="form-label">
+                                Assign Officer
+                            </label>
+                            <select class="form-control" name="user" required>
+                                <option value="">SELECT</option>
+                                <option th:each="s : ${users}" th:value="${s.id}" th:text="${s.email}" required>
+                                </option>
+                            </select>
+                        </div>
+                        <!-- DESCRIPTION -->
+                        <div class="mb-3 col-md-12">
+                            <label class="form-label">
+                                Description
+                            </label>
+                            <textarea name="description" class="form-control" placeholder="Description of folio"
+                                rows="3" maxlength="200" required></textarea>
+                            <small class="text-muted">
+                                Maximum of 200 characters
+                                description.
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                            Clear
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i>
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====footer===== -->
+    <th:block th:insert="~{partials/_footer}" />
+</body>
+
+</html>

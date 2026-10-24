@@ -13,7 +13,8 @@ public interface GroupRepository extends JpaRepository<Group,Long>{
 
     List<Group> findByFolio(Portfolio p);
 
-    List<Group> findAll();
+    List<Group> findAllByOrderByCreatedAtDesc();
 
     Group findByName(String name);
+
 }

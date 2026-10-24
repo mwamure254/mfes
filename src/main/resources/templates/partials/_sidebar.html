@@ -66,20 +66,28 @@
       </a>
     </li>
 
-    <li class="nav-item" sec:authorize="hasRole('PO')">
-      <a class="nav-link collapsed" th:href="@{/inventory/products}">
+    <!-- PORTFOLIO -->
+    <li class="nav-item" sec:authorize="hasAnyRole('MANAGER')">
+      <a class="nav-link collapsed" th:href="@{/manager/portfolios}" aria-controls="portfolioMenu">
+        <i class="bi bi-pie-chart"></i>
+        <span>Portfolios</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" th:href="@{/business/products}">
         <i class="bi bi-box"></i><span>Products</span>
       </a>
     </li>
-    <li class="nav-item" sec:authorize="hasRole('MANAGER')">
+    <li class="nav-item">
       <a class="nav-link collapsed" th:href="@{/manager/organization}">
-        <i class="bi bi-building"></i><span>Organization</span>
+        <i class="bi bi-people"></i><span>Employees</span>
       </a>
     </li>
 
     <!-- BUSINESS -->
-    <li class="nav-heading" sec:authorize="hasAnyRole('PO', 'BDO', 'MANAGER')">Business</li>
-    <li class="nav-item" sec:authorize="hasAnyRole('PO', 'BDO', 'MANAGER')">
+    <li class="nav-heading">Business</li>
+    <li class="nav-item">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#loanMenu" aria-expanded="false"
         aria-controls="loanMenu">
         <i class="bi bi-cash-stack"></i>
@@ -94,7 +102,7 @@
           </a>
         </li>
         <li sec:authorize="hasAnyRole('MANAGER')">
-          <a th:href="@{/loans/approvals}"><i class="bi bi-check2-circle"></i><span>Approvals</span>
+          <a th:href="@{/business/approvals}"><i class="bi bi-check2-circle"></i><span>Approvals</span>
             <span class="badge bg-warning ms-auto">12</span>
           </a>
         </li>
@@ -104,12 +112,12 @@
           </a>
         </li>
         <li>
-          <a th:href="@{/loans/repayments}"><i class="bi bi-arrow-repeat"></i><span>Repayments</span>
+          <a th:href="@{/business/loans/repayments}"><i class="bi bi-arrow-repeat"></i><span>Repayments</span>
             <span class="badge bg-warning ms-auto">12</span>
           </a>
         </li>
         <li>
-          <a th:href="@{/business/dues}">
+          <a th:href="@{/business/loans/dues}">
             <i class="bi bi-exclamation-triangle"></i><span>Overdue</span>
             <span class="badge bg-danger ms-auto">5</span>
           </a>
@@ -118,7 +126,7 @@
     </li>
 
     <!-- BRANCH OPERATIONS -->
-    <li class="nav-item" sec:authorize="hasAnyRole('PO', 'MANAGER')">
+    <li class="nav-item">
       <a class="nav-link collapsed" data-bs-toggle="collapse" href="#branchMenu" aria-expanded="false"
         aria-controls="branchMenu">
         <i class="bi bi-activity"></i>
@@ -126,24 +134,9 @@
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="branchMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-        <li><a th:href="@{/branch/portfolio}"><i class="bi bi-folder2-open"></i><span>Portfolios</span></a></li>
         <li><a th:href="@{/business/collections}"><i class="bi bi-wallet2"></i><span>Collections</span></a></li>
-        <li><a th:href="@{/branch/analytics}"><i class="bi bi-bar-chart"></i><span>Analytics</span></a></li>
-      </ul>
-    </li>
-
-    <!-- PORTFOLIO -->
-    <li class="nav-item" sec:authorize="hasAnyRole('BDO')">
-      <a class="nav-link collapsed" data-bs-toggle="collapse" href="#portfolioMenu" aria-expanded="false"
-        aria-controls="portfolioMenu">
-        <i class="bi bi-pie-chart"></i>
-        <span>Portfolio</span>
-        <i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="portfolioMenu" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-        <li><a th:href="@{/portfolio/analytics}"><i class="bi bi-activity"></i><span>Analytics</span></a></li>
-        <li><a th:href="@{/business/collections}"><i class="bi bi-cash-coin"></i><span>Collections</span></a></li>
-        <li><a th:href="@{/business/arrears}"><i class="bi bi-hourglass-split"></i><span>Arrears</span></a></li>
+        <li><a th:href="@{/business/analytics}"><i class="bi bi-bar-chart"></i><span>Analytics</span></a></li>
+        <li><a th:href="@{/business/loans/arrears}"><i class="bi bi-hourglass-split"></i><span>Arrears</span></a></li>
       </ul>
     </li>
 

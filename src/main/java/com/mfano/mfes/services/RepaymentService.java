@@ -9,8 +9,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.mfano.mfes.dtos.LoanRepaymentSummary;
+import com.mfano.mfes.models.Client;
 import com.mfano.mfes.models.Loan;
 import com.mfano.mfes.models.Repayments;
+import com.mfano.mfes.repositories.ClientRepository;
 import com.mfano.mfes.repositories.LoanRepository;
 import com.mfano.mfes.repositories.MemberCollectionRepository;
 import com.mfano.mfes.repositories.RepaymentRepository;
@@ -22,12 +25,14 @@ public class RepaymentService {
     private final RepaymentRepository repaymentRepository;
     private final LoanRepository loanRepository;
     private final MemberCollectionRepository collectionRepository;
+    private final ClientRepository clientRepository;
 
     public RepaymentService(RepaymentRepository repaymentRepository, LoanRepository loanRepository,
-            MemberCollectionRepository collectionRepository) {
+            MemberCollectionRepository collectionRepository, ClientRepository clientRepository) {
         this.repaymentRepository = repaymentRepository;
         this.loanRepository = loanRepository;
         this.collectionRepository = collectionRepository;
+        this.clientRepository = clientRepository;
     }
 
     public List<Repayments> generateSchedule(Loan loan) {
@@ -89,6 +94,9 @@ public class RepaymentService {
         Loan loan = loanRepository
                 .findById(loanAccountId).orElse(null);
 
+        Client client = clientRepository
+                .findById(loan.getClient().getId()).orElse(null);
+
         BigDecimal outstanding = loan.getOlb()
                 .setScale(2, RoundingMode.HALF_UP);
 
@@ -105,12 +113,14 @@ public class RepaymentService {
         BigDecimal newBalance = outstanding.subtract(payment);
 
         loan.setOlb(newBalance);
+        client.setMla(client.getMla().subtract(payment));
 
         if (newBalance.signum() == 0) {
             loan.setStatus("CLEARED");
         }
 
         loanRepository.save(loan);
+        clientRepository.save(client);
 
         // Persist a LoanRepayment ledger entry here, including:
         // loan account, amount, reference, payment date,
@@ -123,6 +133,18 @@ public class RepaymentService {
 
     public List<Repayments> findUnpaidBetween(LocalDate startDate, LocalDate endDate) {
         return repaymentRepository.findUnpaidBetween(startDate, endDate);
+    }
+
+    public List<Repayments> findDuesUp(LocalDate today) {
+        return repaymentRepository.findUnpaidUpto(today);
+    }
+
+    public LoanRepaymentSummary getLoanRepaymentSummary(Loan l, LocalDate end) {
+        return repaymentRepository.getLoanRepaymentSummaries(l, end);
+    }
+
+    public List<LoanRepaymentSummary> getLoanSummaries(LocalDate endDate) {
+        return repaymentRepository.getLoanSummaries(endDate);
     }
 
     public List<Repayments> findOverdue(LocalDate today) {
@@ -147,7 +169,7 @@ public class RepaymentService {
             return;
         }
 
-        BigDecimal unpaid = installment.getAmountDue()
+        BigDecimal unpaid = installment.getTotalAmount()
                 .subtract(installment.getAmountPaid())
                 .max(BigDecimal.ZERO);
 
@@ -226,10 +248,12 @@ public class RepaymentService {
                 .findById(installment.getLoan().getId())
                 .orElseThrow(() -> new IllegalStateException("Loan not found"));
 
-        var account = collectionRepository
-                .findByMemberId(loan.getClient().getId())
-                .orElseThrow(() -> new IllegalStateException(
-                        "Loan repayment account not found"));
+        /*
+         * var account = collectionRepository
+         * .findByMemberId(loan.getClient().getId())
+         * .orElseThrow(() -> new IllegalStateException(
+         * "Loan repayment account not found"));
+         */
 
         // Idempotency guard: a successful repayment must never be repeated.
         if (repaymentRepository
@@ -237,14 +261,14 @@ public class RepaymentService {
             return false;
         }
 
-        BigDecimal amount = installment.getAmountDue()
+        BigDecimal amount = installment.getTotalAmount()
                 .subtract(installment.getAmountPaid());
 
         if (amount.signum() <= 0) {
             return false;
         }
 
-        BigDecimal available = account.getLoanAmount();
+        BigDecimal available = loan.getOlb();
 
         // Full installment only: do not make a partial debit.
         if (available.compareTo(amount) < 0) {
@@ -257,17 +281,10 @@ public class RepaymentService {
         }
 
         // All updates participate in the same database transaction.
-        account.setLoanAmount(available.subtract(amount));
-
-        loan.setOlb(
-                loan.getOlb().subtract(amount));
-
-        installment.setAmountPaid(
-                installment.getAmountPaid().add(amount));
-
+        loan.setOlb(available.subtract(amount));
+        installment.setAmountPaid(installment.getAmountPaid().add(amount));
         installment.setStatus("PAID");
 
-        collectionRepository.save(account);
         loanRepository.save(loan);
         repaymentRepository.save(installment);
 
@@ -281,5 +298,9 @@ public class RepaymentService {
          * installmentId, account.getId(), amount, today);
          */
         return true;
+    }
+
+    public Long getCountByLoan(Loan loan) {
+        return repaymentRepository.countByLoan(loan);
     }
 }
