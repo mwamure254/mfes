@@ -12,13 +12,31 @@
     <th:block th:insert="~{partials/_sidebar}" />
 
     <main id="main" class="main">
+        <!-- Page Heading -->
+        <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1>
+                    <i class="bi bi-cash-coin"></i>
+                    Loan Arrears
+                </h1>
+            </div>
 
-        <div class="pagetitle">
-            <h1 class="fw-bold mb-1">
-                <i class="bi bi-cash-coin"></i>
-                Loan Arresrs
-            </h1>
-        </div>
+            <!-- Breadcrumb -->
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">
+                            <i class="bi bi-house-door me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/business/loans}">Loans</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Arrears</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
 
         <section class="section dashboard">
             <!-- HEADER -->
@@ -136,7 +154,7 @@
 
                                 <tr th:if="${#lists.isEmpty(dues)}">
                                     <td colspan="8" class="text-center text-muted py-4">
-                                        No repayments found for this filter.
+                                        No arrears found for this filter.
                                     </td>
                                 </tr>
                             </tbody>

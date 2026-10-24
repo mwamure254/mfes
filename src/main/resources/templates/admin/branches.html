@@ -22,42 +22,103 @@
 
 
     <main id="main" class="main">
+        <!-- Page Heading -->
+        <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">
+                    <i class="bi bi-diagram-3"></i> Branches
+                </h1>
 
-        <!-- Page Header -->
-        <div class="pagetitle">
-            <h1 class="fw-bold mb-1">
-                <i class="bi bi-diagram-3"></i> Branches
-            </h1>
-        </div>
+                <p class="text-muted mb-0">
+                    Manage branches, staff and business locations.
+                </p>
+            </div>
+
+            <!-- Breadcrumb -->
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">
+                            <i class="bi bi-house-door me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">Admin</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Branches</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
 
         <section class="section dashboard">
 
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <p class="text-muted mb-0">
-                        Manage branches, staff and business locations.
-                    </p>
-                </div>
-
-                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addBranchModal">
-                    <i class="bi bi-plus-lg"></i> Add Branch
-                </button>
-            </div>
-
-            <!-- Search -->
             <div class="card border-0 shadow-sm mb-3">
-                <div class="input-group p-2">
-                    <span class="input-group-text">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" id="tableSearch" class="form-control" placeholder="Search branches...">
+                <!-- Card Header -->
+                <div class="card-header py-3">
+                    <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between">
+
+                        <!-- SEARCH -->
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+
+                                <input type="text" id="tableSearch" class="form-control"
+                                    placeholder="Search branches...">
+                            </div>
+                        </div>
+                        <div class="mt-3 mt-md-0 d-flex flex-wrap">
+                            <!-- Export -->
+                            <div class="btn-group mr-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-download bi-sm mr-1"></i>Export
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <h6 class="dropdown-header">Export Records</h6>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/excel(filter=${filter})}"><i
+                                            class="bi bi-file-excel fa-sm fa-fw mr-2 text-success"></i>Excel</a>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/pdf(filter=${filter})}"><i
+                                            class="bi bi-file-pdf fa-sm fa-fw mr-2 text-danger"></i>PDF</a>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/word(filter=${filter})}"><i
+                                            class="bi bi-file-word fa-sm fa-fw mr-2 text-primary"></i>WORD</a>
+                                </div>
+                            </div>
+
+                            <!-- Filter -->
+                            <div class="btn-group mr-2 mb-2 px-2">
+                                <button type="button" class="btn btn-sm btn-outline-warning dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-filter bi-sm mr-1"></i>Filter
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <h6 class="dropdown-header">Filter By Date</h6>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='today')}">Today</a>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='month')}">This
+                                        Month</a>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='year')}">This
+                                        Year</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" th:href="@{/records/documents}">All Entries</a>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-outline-primary mr-2 mb-2" data-bs-toggle="modal"
+                                data-bs-target="#addBranchModal">
+                                <i class="bi bi-plus-lg"></i> Add Branch
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Table -->
                 <div class="table-responsive p-2">
                     <table class="table table-hover align-middle" id="table">
-
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
@@ -159,7 +220,8 @@
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                     Cancel
                                                 </button>
-                                                <form th:action="@{/admin/branches/delete/{id}(id=${b.id})}" method="post">
+                                                <form th:action="@{/admin/branches/delete/{id}(id=${b.id})}"
+                                                    method="post">
                                                     <button type="submit" class="btn btn-danger">
                                                         <i class="bi bi-trash"></i>
                                                         Delete
@@ -191,14 +253,14 @@
 
                                                         <div class="col-md-8">
                                                             <label class="form-label">Branch Name</label>
-                                                            <input type="text" name="name" th:value="${b.name}" class="form-control"
-                                                                placeholder="Main Branch" required>
+                                                            <input type="text" name="name" th:value="${b.name}"
+                                                                class="form-control" placeholder="Main Branch" required>
                                                         </div>
 
                                                         <div class="col-md-4">
                                                             <label class="form-label">Branch Code</label>
-                                                            <input type="text" name="code" th:value="${b.code}" class="form-control"
-                                                                placeholder="HQ" required>
+                                                            <input type="text" name="code" th:value="${b.code}"
+                                                                class="form-control" placeholder="HQ" required>
                                                         </div>
 
                                                         <div class="col-md-6">
@@ -209,14 +271,14 @@
 
                                                         <div class="col-md-6">
                                                             <label class="form-label">Phone</label>
-                                                            <input type="tel" name="phone" th:value="${b.phone}" class="form-control"
-                                                                placeholder="07XXXXXXXX">
+                                                            <input type="tel" name="phone" th:value="${b.phone}"
+                                                                class="form-control" placeholder="07XXXXXXXX">
                                                         </div>
 
                                                         <div class="col-12">
                                                             <label class="form-label">Email</label>
-                                                            <input type="email" name="email" th:value="${b.email}" class="form-control"
-                                                                placeholder="branch@example.com">
+                                                            <input type="email" name="email" th:value="${b.email}"
+                                                                class="form-control" placeholder="branch@example.com">
                                                         </div>
 
                                                     </div>
@@ -250,6 +312,18 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Records are maintained for security and accountability.
+                        </small>
+                        <span class="badge bg-secondary" th:if="${branches != null}"
+                            th:text="${#lists.size(branches) + ' Entries'}">0 Entries</span>
+                    </div>
                 </div>
             </div>
         </section>

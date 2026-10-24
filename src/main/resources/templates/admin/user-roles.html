@@ -22,12 +22,30 @@
 
 	<!-- ======Main===== -->
 	<main id="main" class="main">
+		<!-- Page Heading -->
+		<div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+			<div>
+				<h1 class="fw-bold mb-1">
+					<i class="bi bi-person-badge"></i>
+					User Role Dashboard
+				</h1>
+			</div>
 
-		<div class="pagetitle">
-			<h1 class="fw-bold mb-1">
-				<i class="bi bi-person-badge"></i>
-				User Role Dashboard
-			</h1>
+			<!-- Breadcrumb -->
+			<nav>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item">
+						<a th:href="@{/}">
+							<i class="bi bi-house-door me-1"></i>
+							Dashboard
+						</a>
+					</li>
+					<li class="breadcrumb-item">
+						<a th:href="@{/admin/users}">Users</a>
+					</li>
+					<li class="breadcrumb-item active" aria-current="page">Roles</li>
+				</ol>
+			</nav>
 		</div><!-- End Page Title -->
 
 		<section class="section dashboard">

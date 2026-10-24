@@ -99,6 +99,12 @@ public class BusinessController {
                 dir = "business/analytics";
                 break;
 
+            case "portfolios":
+                red.addAttribute("portfolios", forlioService.getAll());
+                red.addAttribute("users", userService.findAll());
+                dir = "manager/portfolios";
+                break;
+
             case "collections":
                 red.addAttribute("collection", collectionService.getAll());
                 red.addAttribute("groups", groupService.getAll());

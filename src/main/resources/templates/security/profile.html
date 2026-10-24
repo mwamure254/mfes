@@ -21,17 +21,34 @@
   <!-- =====End Sidebar=====-->
 
   <main id="main" class="main">
+ <!-- Page Heading -->
+        <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-person me-2 text-primary"></i>
+                    Profile
+                </h1>
+                <p class="mb-0 text-muted small">
+                    Update personal details.
+                </p>
+            </div>
 
-    <div class="pagetitle my-4">
-      <h3>Profile</h3>
-      <nav class="bg-dark">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/"><i class="bi bi-house-door"></i>
-              <span>Home</span></a></li>
-          <li class="breadcrumb-item active"><i class="bi bi-record-fill"></i>Profile</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
+            <!-- Breadcrumb -->
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">
+                            <i class="bi bi-house-door me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">User</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
 
     <section class="section profile">
       <div class="row">

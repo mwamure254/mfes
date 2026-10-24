@@ -22,288 +22,352 @@
 
 
     <main id="main" class="main">
-        
-        <div class="pagetitle">
-            <h1 class="fw-bold mb-1">
-                <i class="bi bi-person-badge"></i>
-                Roles
-            </h1>
+        <!-- Page Heading -->
+        <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">
+                    <i class="bi bi-person-badge"></i>
+                    Roles
+                </h1>
+                <p class="text-muted mb-0">
+                    Manage roles, permissions and access
+                </p>
+            </div>
+
+            <!-- Breadcrumb -->
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">
+                            <i class="bi bi-house-door me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">Admin</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Roles</li>
+                </ol>
+            </nav>
         </div><!-- End Page Title -->
 
         <section class="section dashboard">
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
 
-                <div>
-                    <p class="text-muted mb-0">
-                        Manage roles, permissions and access
-                    </p>
-                </div>
+            <div class="card border-0">
+                <!-- Card Header -->
+                <div class="card-header py-3">
+                    <div class="d-flex flex-column flex-md-row align-items-md-start justify-content-between">
 
-                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-
-                    <i class="bi bi-plus-lg"></i>
-                    Add Role
-
-                </button>
-
-            </div>
-
-            <!-- SEARCH -->
-            <div class="card borde-0">
-                <div class="input-group p-2">
-                    <span class="input-group-text">
-                        <i class="bi bi-search"></i>
-                    </span>
-
-                    <input type="text" id="tableSearch" class="form-control" placeholder="Search roles...">
-                </div>
-
-                <!-- ROLES TABLE -->
-                <div class="card border-0 shadow-sm">
-                    <div class="table-responsive p-2">
-                        <table class="table table-hover align-middle mb-0" id="table">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Role</th>
-                                    <th>Description</th>
-                                    <th>Created By</th>
-                                    <th>Status</th>
-                                    <th class="text-end" sec:authorize="hasRole('ADMIN')">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr th:each="r, stat : ${roles}">
-                                    <!-- ID -->
-                                    <td th:text="${stat.count}" th:id="'r-' + ${r.id}">
-                                        1
-                                    </td>
-                                    <!-- ROLE -->
-                                    <td th:text="${r.name}">
-                                        ROLE name
-                                    </td>
-
-                                    <!-- DESCRIPTION -->
-                                    <td th:text="${r.description}">
-                                        SKU001
-                                    </td>
-                                    <!-- CREATED BY -->
-                                    <td th:text="${r.createdBy}">
-                                        PERSON
-                                    </td>
-                                    <!-- STATUS -->
-                                    <td>
-                                        <span th:if="${r.active}" class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i>
-                                            Active
-                                        </span>
-                                        <span th:unless="${r.active}" class="badge bg-danger">
-                                            <i class="bi bi-x-circle"></i>
-                                            Inactive
-                                        </span>
-                                    </td>
-                                    <!-- ACTIONS -->
-                                    <td class="text-end" sec:authorize="hasAnyRole('ADMIN')">
-                                        <div class="btn-group">
-                                            <!-- EDIT -->
-                                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                                data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${r.id}"
-                                                title="Edit">
-
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <!-- TOGGLE -->
-                                            <form th:action="@{/admin/roles/toggle/{id}(id=${r.id})}" method="post"
-                                                class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-outline-warning" th:title="${r.active}
-                                            ? 'Deactivate'
-                                            : 'Activate'">
-                                                    <i th:class="${r.active}
-                                        ? 'bi bi-toggle-on'
-                                        : 'bi bi-toggle-off'">
-                                                    </i>
-                                                </button>
-                                            </form>
-                                            <!-- DELETE -->
-                                            <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                                th:data-bs-target="'#deleteModal' + ${r.id}" title="Delete">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-
-                                        <!-- DELETE MODAL -->
-                                        <div class="modal fade" th:id="'deleteModal' + ${r.id}" tabindex="-1">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">
-                                                            Delete role
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body text-start">
-                                                        Are you sure you want to delete
-                                                        <strong th:text="${r.name}">
-                                                            ROLE
-                                                        </strong>?
-                                                        <br>
-                                                        <small class="text-danger">
-                                                            This action cannot be undone.
-                                                        </small>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">
-                                                            Cancel
-                                                        </button>
-                                                        <form th:action="@{/admin/roles/delete/{id}(id=${r.id})}"
-                                                            method="post">
-                                                            <button type="submit" class="btn btn-danger">
-                                                                <i class="bi bi-trash"></i>
-                                                                Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!--END DELETE MODAL-->
-                                    </td>
-
-                                    <!-- EDIT ROLE MODAL -->
-                                    <div class="modal fade" th:id="'editModal' + ${r.id}" tabindex="-1"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog modal-md modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <form th:action="@{/admin/roles/update/{id}(id=${r.id})}" method="post">
-                                                    <!-- HEADER -->
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">
-                                                            <i class="bi bi-pencil-square"></i>
-                                                            Edit Role
-                                                        </h5>
-
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                                        </button>
-                                                    </div>
-
-                                                    <!-- BODY -->
-                                                    <div class="modal-body">
-                                                        <div class="row g-3">
-                                                            <!-- NAME -->
-                                                            <div class="col-md-12">
-                                                                <label class="form-label">
-                                                                    Role Name
-                                                                </label>
-                                                                <input type="text" class="form-control" name="name"
-                                                                    placeholder="Role name" th:value="${r.name}"
-                                                                    required>
-                                                            </div>
-
-                                                            <!-- DESCRIPTION -->
-                                                            <div class="col-md-12">
-                                                                <label class="form-label">
-                                                                    Description
-                                                                </label>
-                                                                <textarea rows="3" maxlength="200" class="form-control"
-                                                                    name="description" placeholder="Description"
-                                                                    required th:text="${r.description}"></textarea>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- FOOTER -->
-                                                    <div class="modal-footer">
-                                                        <button type="reset" class="btn btn-warning"
-                                                            data-bs-dismiss="modal">
-                                                            Clear
-                                                        </button>
-
-                                                        <button type="submit" class="btn btn-primary">
-                                                            <i class="bi bi-save"></i>
-                                                            Update
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </tr>
-
-                                <!-- EMPTY -->
-                                <tr th:if="${#lists.isEmpty(roles)}">
-                                    <td colspan="7" class="text-center py-5">
-                                        <i class="bi bi-person-badge fs-1 text-muted"></i>
-                                        <h5 class="mt-3">
-                                            No Roles found
-                                        </h5>
-                                        <p class="text-muted">
-                                            Add your first role to get started.
-                                        </p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADD ROLE MODAL -->
-            <div class="modal fade" id="addModal" tabindex="-1">
-                <div class="modal-dialog modal-md modal-dialog-centered">
-                    <div class="modal-content">
-                        <form th:action="@{/admin/roles/save}" method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title">
-                                    <i class="bi bi-plus-circle"></i>
-                                    Add Role
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                </button>
+                        <!-- SEARCH -->
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" id="tableSearch" class="form-control" placeholder="Search roles...">
                             </div>
-
-                            <div class="modal-body">
-                                <div class="row g-3">
-                                    <!-- NAME -->
-                                    <div class="col-md-12">
-                                        <label class="form-label">
-                                            Role Name
-                                        </label>
-                                        <input type="text" name="name" class="form-control" placeholder="Role name"
-                                            required>
-                                    </div>
-                                    <!-- SKU -->
-                                    <div class="col-md-12">
-                                        <label class="form-label">
-                                            Description
-                                        </label>
-                                        <textarea rows="3" maxlength="200" name="description" class="form-control"
-                                            placeholder="Description of the role" required>
-                                        </textarea>
-                                    </div>
+                        </div>
+                        <div class="mt-3 mt-md-0 d-flex flex-wrap">
+                            <!-- Export -->
+                            <div class="btn-group mr-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-download bi-sm mr-1"></i>Export
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <h6 class="dropdown-header">Export Records</h6>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/excel(filter=${filter})}"><i
+                                            class="bi bi-file-excel fa-sm fa-fw mr-2 text-success"></i>Excel</a>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/pdf(filter=${filter})}"><i
+                                            class="bi bi-file-pdf fa-sm fa-fw mr-2 text-danger"></i>PDF</a>
+                                    <a class="dropdown-item"
+                                        th:href="@{/records/documents/export/word(filter=${filter})}"><i
+                                            class="bi bi-file-word fa-sm fa-fw mr-2 text-primary"></i>WORD</a>
                                 </div>
                             </div>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
-                                    Clear
+                            <!-- Filter -->
+                            <div class="btn-group mr-2 mb-2 px-2">
+                                <button type="button" class="btn btn-sm btn-outline-warning dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                    <i class="bi bi-filter bi-sm mr-1"></i>Filter
                                 </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-save"></i>
-                                    Save
-                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <h6 class="dropdown-header">Filter By Date</h6>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='today')}">Today</a>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='month')}">This
+                                        Month</a>
+                                    <a class="dropdown-item" th:href="@{/records/documents(filter='year')}">This
+                                        Year</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" th:href="@{/records/documents}">All Entries</a>
+                                </div>
                             </div>
-                        </form>
+
+                            <button class="btn btn-outline-primary mr-2 mb-2" data-bs-toggle="modal"
+                                data-bs-target="#addModal">
+                                <i class="bi bi-plus-lg"></i>
+                                Add Role
+                            </button>
+                        </div>
                     </div>
                 </div>
-        </section>
 
+                <!-- ROLES TABLE -->
+                <div class="table-responsive p-2">
+                    <table class="table table-hover align-middle mb-0" id="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Role</th>
+                                <th>Description</th>
+                                <th>Created By</th>
+                                <th>Status</th>
+                                <th class="text-end" sec:authorize="hasRole('ADMIN')">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="r, stat : ${roles}">
+                                <!-- ID -->
+                                <td th:text="${stat.count}" th:id="'r-' + ${r.id}">
+                                    1
+                                </td>
+                                <!-- ROLE -->
+                                <td th:text="${r.name}">
+                                    ROLE name
+                                </td>
+
+                                <!-- DESCRIPTION -->
+                                <td th:text="${r.description}">
+                                    SKU001
+                                </td>
+                                <!-- CREATED BY -->
+                                <td th:text="${r.createdBy}">
+                                    PERSON
+                                </td>
+                                <!-- STATUS -->
+                                <td>
+                                    <span th:if="${r.active}" class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i>
+                                        Active
+                                    </span>
+                                    <span th:unless="${r.active}" class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i>
+                                        Inactive
+                                    </span>
+                                </td>
+                                <!-- ACTIONS -->
+                                <td class="text-end" sec:authorize="hasAnyRole('ADMIN')">
+                                    <div class="btn-group">
+                                        <!-- EDIT -->
+                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${r.id}"
+                                            title="Edit">
+
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <!-- TOGGLE -->
+                                        <form th:action="@{/admin/roles/toggle/{id}(id=${r.id})}" method="post"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" th:title="${r.active}
+                                            ? 'Deactivate'
+                                            : 'Activate'">
+                                                <i th:class="${r.active}
+                                        ? 'bi bi-toggle-on'
+                                        : 'bi bi-toggle-off'">
+                                                </i>
+                                            </button>
+                                        </form>
+                                        <!-- DELETE -->
+                                        <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                            th:data-bs-target="'#deleteModal' + ${r.id}" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+
+                                    <!-- DELETE MODAL -->
+                                    <div class="modal fade" th:id="'deleteModal' + ${r.id}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        Delete role
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    Are you sure you want to delete
+                                                    <strong th:text="${r.name}">
+                                                        ROLE
+                                                    </strong>?
+                                                    <br>
+                                                    <small class="text-danger">
+                                                        This action cannot be undone.
+                                                    </small>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                        Cancel
+                                                    </button>
+                                                    <form th:action="@{/admin/roles/delete/{id}(id=${r.id})}"
+                                                        method="post">
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="bi bi-trash"></i>
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--END DELETE MODAL-->
+                                </td>
+
+                                <!-- EDIT ROLE MODAL -->
+                                <div class="modal fade" th:id="'editModal' + ${r.id}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-md modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form th:action="@{/admin/roles/update/{id}(id=${r.id})}" method="post">
+                                                <!-- HEADER -->
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                        Edit Role
+                                                    </h5>
+
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                    </button>
+                                                </div>
+
+                                                <!-- BODY -->
+                                                <div class="modal-body">
+                                                    <div class="row g-3">
+                                                        <!-- NAME -->
+                                                        <div class="col-md-12">
+                                                            <label class="form-label">
+                                                                Role Name
+                                                            </label>
+                                                            <input type="text" class="form-control" name="name"
+                                                                placeholder="Role name" th:value="${r.name}" required>
+                                                        </div>
+
+                                                        <!-- DESCRIPTION -->
+                                                        <div class="col-md-12">
+                                                            <label class="form-label">
+                                                                Description
+                                                            </label>
+                                                            <textarea rows="3" maxlength="200" class="form-control"
+                                                                name="description" placeholder="Description" required
+                                                                th:text="${r.description}"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- FOOTER -->
+                                                <div class="modal-footer">
+                                                    <button type="reset" class="btn btn-warning"
+                                                        data-bs-dismiss="modal">
+                                                        Clear
+                                                    </button>
+
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="bi bi-save"></i>
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </tr>
+
+                            <!-- EMPTY -->
+                            <tr th:if="${#lists.isEmpty(roles)}">
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-person-badge fs-1 text-muted"></i>
+                                    <h5 class="mt-3">
+                                        No Roles found
+                                    </h5>
+                                    <p class="text-muted">
+                                        Add your first role to get started.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Records are maintained for security and accountability.
+                        </small>
+                        <span class="badge bg-secondary" th:if="${roles != null}"
+                            th:text="${#lists.size(roles) + ' Entries'}">0 Entries</span>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main><!-- End #main -->
+
+    <!-- ADD ROLE MODAL -->
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/admin/roles/save}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-plus-circle"></i>
+                            Add Role
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <!-- NAME -->
+                            <div class="col-md-12">
+                                <label class="form-label">
+                                    Role Name
+                                </label>
+                                <input type="text" name="name" class="form-control" placeholder="Role name" required>
+                            </div>
+                            <!-- SKU -->
+                            <div class="col-md-12">
+                                <label class="form-label">
+                                    Description
+                                </label>
+                                <textarea rows="3" maxlength="200" name="description" class="form-control"
+                                    placeholder="Description of the role" required>
+                                        </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                            Clear
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i>
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
 
     <!-- =====footer===== -->
     <th:block th:insert="~{partials/_footer}" />
