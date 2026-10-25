@@ -121,44 +121,53 @@
                 </div>
             </div>
 
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="table">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Reference</th>
-                                <th>Group</th>
-                                <th>Amount (Ksh)</th>
-                                <th>Method</th>
-                                <th>Officer</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
+            <div class="card-body table-responsive">
+                <table class="table table-hover align-middle mb-0" id="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Reference</th>
+                            <th>Group</th>
+                            <th>Amount (Ksh)</th>
+                            <th>Method</th>
+                            <th>Officer</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
 
-                        <tbody>
-                            <tr th:each="col, stat : ${collection}">
-                                <td th:text="${stat.count}">1</td>
-                                <td th:text="${col.reference}">#214 </td>
-                                <td th:text="${group.name}">12345678</td>
-                                <td th:text="${col.pa}">200.00 </td>
-                                <td th:text="${col.pm}"> Mpesa</td>
-                                <td th:text="${officer.fin + ' ' + officer.lan}">0.00</td>
-                                <td th:text="${#temporals.format(col.createdAt, 'dd MMM yyyy HH:mm')}"> Date</td>
-                            </tr>
+                    <tbody>
+                        <tr th:each="col, stat : ${collection}">
+                            <td th:text="${stat.count}">1</td>
+                            <td th:text="${col.reference}">#214 </td>
+                            <td th:text="${group.name}">12345678</td>
+                            <td th:text="${col.pa}">200.00 </td>
+                            <td th:text="${col.pm}"> Mpesa</td>
+                            <td th:text="${officer.fin + ' ' + officer.lan}">0.00</td>
+                            <td th:text="${#temporals.format(col.createdAt, 'dd MMM yyyy HH:mm')}"> Date</td>
+                        </tr>
 
-                            <tr th:if="${#lists.isEmpty(collection)}">
-                                <td colspan="6" class="text-center text-muted py-4">
-                                    <!-- FIXED colspan -->
-                                    Select a group and load its members.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <tr th:if="${#lists.isEmpty(collection)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <!-- FIXED colspan -->
+                                Select a group and load its members.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Audit records are maintained for security and accountability.
+                    </small>
+                    <span class="badge bg-secondary" th:if="${collection != null}"
+                        th:text="${#lists.size(collection) + ' Entries'}">0 Entries</span>
                 </div>
             </div>
         </div>
-
     </main>
 
     <th:block th:insert="~{partials/_footer}" />

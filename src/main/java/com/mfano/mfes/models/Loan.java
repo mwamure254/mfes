@@ -100,17 +100,13 @@ public class Loan extends BaseObject {
     @Size(max = 255)
     @Column(name = "land_mark")
     private String landMark; // "Next to Malindi Market"
-
-    // Calculate monthly repayment: P*r/(1-(1+r)^-n)
+    
+    // Calculate monthly repayment: (P*r/100)/t + p/t
     public BigDecimal getMonthlyRepayment() {
-        BigDecimal monthlyRate = interestRate.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
-        BigDecimal one = BigDecimal.ONE;
-        BigDecimal power = one.add(monthlyRate).pow(termMonths);
-
-        return amount.multiply(monthlyRate)
-                .multiply(power)
-                .divide(power.subtract(one), 2, RoundingMode.HALF_UP);
+        BigDecimal monthlyR = interestRate.divide(BigDecimal.valueOf(100), 12, RoundingMode.HALF_UP);
+        BigDecimal monthlyI = amount.multiply(monthlyR).divide(BigDecimal.valueOf(termMonths), 2, RoundingMode.HALF_UP);
+        BigDecimal monthlyP = amount.divide(BigDecimal.valueOf(termMonths), 2, RoundingMode.HALF_UP);
+        return monthlyP.add(monthlyI);
     }
 
     public BigDecimal getTotalAmount() {

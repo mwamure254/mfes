@@ -3,10 +3,10 @@
 
 <th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
     <!-- Custom meta data for this template-->
-    <meta name="description" content="meo home page">
+    <meta name="description" content="mfes users page">
     <meta name="author" content="mfano">
     <!-- Custom title for this page-->
-    <title>MPOS | Admin Users</title>
+    <title>MFES | Admin Users</title>
     <!-- Custom styles for this page-->
 </th:block>
 
@@ -481,10 +481,10 @@
                             </label>
                             <di class="input-group">
                                 <input name="password" class="form-control" type="password" placeholder="Password"
-                                    id="password1" required />
+                                    id="password" required />
 
                                 <button class="input-group-text btn btn-outline-secondary" type="button"
-                                    onclick="togglePassword('password1', this)">
+                                    onclick="togglePassword('password', this)">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </di>

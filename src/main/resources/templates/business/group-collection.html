@@ -33,7 +33,7 @@
                         </a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a th:href="@{/business/collection}">Collections</a>
+                        <a th:href="@{/business/collections}">Collections</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Group</li>
                 </ol>
@@ -141,7 +141,7 @@
                                 <tr th:if="${#lists.isEmpty(clients)}">
                                     <td colspan="6" class="text-center text-muted py-4">
                                         <!-- FIXED colspan -->
-                                        Select a group and load its members.
+                                        Group selected has no members yet.
                                     </td>
                                 </tr>
                             </tbody>

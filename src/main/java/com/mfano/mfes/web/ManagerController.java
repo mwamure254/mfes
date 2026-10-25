@@ -103,7 +103,7 @@ public class ManagerController {
             redirectAttributes.addFlashAttribute(
                     "message", "Portfolio created successfully.");
         }
-        return "redirect:/manager/organization";
+        return "redirect:/business/portfolios";
     }
 
     @PostMapping("/groups/save")
@@ -124,7 +124,7 @@ public class ManagerController {
     }
 
     @PostMapping("/clients/save")
-    public String saveGroup(
+    public String saveClient(
             @Valid Client client,
             RedirectAttributes redirectAttributes) {
         if (clientService.getByPhone(client.getPhone()) != null) {
@@ -133,7 +133,7 @@ public class ManagerController {
 
         } else if (clientService.getByNumber(client.getIdNumber()) != null) {
             redirectAttributes.addFlashAttribute(
-                    "error", "Client ID already exists.");
+                    "error", "Client ID number already exists.");
         } else {
             clientService.save(client);
 
@@ -156,7 +156,7 @@ public class ManagerController {
                     "message", "Portfolio updated successfully.");
         }
 
-        return "redirect:/manager/organization";
+        return "redirect:/business/portfolios";
     }
 
     @PostMapping("/groups/update/{id}")
@@ -217,7 +217,7 @@ public class ManagerController {
                 break;
         }
 
-        return "redirect:/manager/organization";
+        return "redirect:/business/portfolios";
     }
 
     @PostMapping("/clients/{option}/{id}")

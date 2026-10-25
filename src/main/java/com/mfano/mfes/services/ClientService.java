@@ -33,7 +33,7 @@ public class ClientService {
         return clientRepository.findById(id).orElse(null);
     }
 
-    public List<Client> getByNumber(String n){
+    public Client getByNumber(String n){
         return clientRepository.findByIdNumber(n);
     }
     

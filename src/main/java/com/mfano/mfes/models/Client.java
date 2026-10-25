@@ -23,7 +23,9 @@ import lombok.Setter;
 public class Client extends BaseObject{
     private String fin;
     private String lan;
+    @Column(unique = true)
     private String idNumber;
+    @Column(unique = true)
     private String phone;
     private String document;
     private boolean active = false;
@@ -32,6 +34,8 @@ public class Client extends BaseObject{
     private BigDecimal msa = BigDecimal.ZERO;
     @DecimalMin("0.00")
     private BigDecimal mla = BigDecimal.ZERO;
+    @DecimalMin("0.00")
+    private BigDecimal limit = BigDecimal.ZERO;
     
     @Column(precision = 9, scale = 6)
     @DecimalMin("-90.0") @DecimalMax("90.0")
