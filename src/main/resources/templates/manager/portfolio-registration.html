@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>MFES | Portfolio Registration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white">
+      <h4 class="mb-0"><i class="bi bi-diagram-3-fill me-2"></i>Portfolio / Loan Officer Registration</h4>
+    </div>
+
+    <form th:action="@{/portfolios/save}" th:object="${portfolio}" method="post" enctype="multipart/form-data">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <div class="card-body">
+
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item"><button type="button" class="nav-link active" data-bs-toggle="tab" data-bs-target="#basic">Basic Info</button></li>
+          <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#assignment">Assignment</button></li>
+          <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#targets">Targets</button></li>
+          <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#documents">Documents</button></li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- TAB 1: BASIC INFO -->
+          <div class="tab-pane fade show active" id="basic">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Portfolio Code</label>
+                <input type="text" class="form-control" th:field="*{code}" placeholder="PO-MK-001" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Portfolio Name</label>
+                <input type="text" class="form-control" th:field="*{name}" placeholder="Mariakani Field Team A" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Portfolio Type</label>
+                <select class="form-select" th:field="*{type}">
+                  <option value="LOAN_OFFICER">Loan Officer</option>
+                  <option value="BRANCH">Branch</option>
+                  <option value="FIELD_TEAM">Field Team</option>
+                  <option value="AGENCY">Agency</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Loan Officer In Charge</label>
+                <select class="form-select" th:field="*{officerId}">
+                  <option value="">Select Officer</option>
+                  <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName}"></option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Branch</label>
+                <select class="form-select" th:field="*{branchId}">
+                  <option value="">Select Branch</option>
+                  <option th:each="b : ${branches}" th:value="${b.id}" th:text="${b.name}"></option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Date Created</label>
+                <input type="date" class="form-control" th:field="*{dateCreated}" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description / Area of Operation</label>
+                <textarea class="form-control" rows="2" th:field="*{description}" placeholder="Mariakani, Bamba, Kaloleni Ward"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: ASSIGNMENT -->
+          <div class="tab-pane fade" id="assignment">
+            <h6 class="text-muted mb-3">Assign Groups to this Portfolio</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">Available Groups</label>
+                <select id="availableGroups" class="form-select" size="10">
+                  <option th:each="g : ${allGroups}" th:value="${g.id}" th:text="${g.name + ' - ' + g.ward}"></option>
+                </select>
+              </div>
+              <div class="col-md-1 d-flex flex-column justify-content-center align-items-center gap-2">
+                <button type="button" class="btn btn-outline-primary" onclick="moveRight()"><i class="bi bi-chevron-right"></i></button>
+                <button type="button" class="btn btn-outline-danger" onclick="moveLeft()"><i class="bi bi-chevron-left"></i></button>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Assigned Groups</label>
+                <select id="assignedGroups" name="groupIds" class="form-select" size="10" multiple></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: TARGETS -->
+          <div class="tab-pane fade" id="targets">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Target Groups</label>
+                <input type="number" class="form-control" th:field="*{targetGroups}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Target Clients</label>
+                <input type="number" class="form-control" th:field="*{targetClients}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Target Loan Portfolio Ksh</label>
+                <input type="number" step="0.01" class="form-control" th:field="*{targetLoanPortfolio}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Target Savings Ksh</label>
+                <input type="number" step="0.01" class="form-control" th:field="*{targetSavings}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">PAR % Target</label>
+                <input type="number" step="0.1" class="form-control" th:field="*{parTarget}">
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: DOCUMENTS -->
+          <div class="tab-pane fade" id="documents">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Appointment Letter</label>
+                <input type="file" class="form-control" name="appointmentLetter" accept=".pdf,.jpg,.png">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">ID Copy</label>
+                <input type="file" class="form-control" name="idCopy" accept=".pdf,.jpg,.png">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Contract Agreement</label>
+                <input type="file" class="form-control" name="contract" accept=".pdf">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer d-flex justify-content-end gap-2">
+        <a href="/portfolios" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-dark"><i class="bi bi-save me-1"></i> Save Portfolio</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function moveRight(){
+    document.querySelectorAll('#availableGroups option:checked').forEach(opt => {
+      opt.selected = false;
+      document.getElementById('assignedGroups').appendChild(opt);
+    });
+  }
+  function moveLeft(){
+    document.querySelectorAll('#assignedGroups option:checked').forEach(opt => {
+      opt.selected = false;
+      document.getElementById('availableGroups').appendChild(opt);
+    });
+  }
+  document.querySelector('form').addEventListener('submit', () => {
+    [...document.getElementById('assignedGroups').options].forEach(o => o.selected = true);
+  });
+</script>
+</body>
+</html>

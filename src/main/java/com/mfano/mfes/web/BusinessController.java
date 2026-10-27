@@ -1,6 +1,9 @@
 package com.mfano.mfes.web;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mfes.auth.services.AuditService;
@@ -26,6 +30,7 @@ import com.mfano.mfes.auth.services.BranchService;
 import com.mfano.mfes.auth.services.RoleService;
 import com.mfano.mfes.auth.services.UserService;
 import com.mfano.mfes.config.CustomUserDetails;
+import com.mfano.mfes.dtos.LoanApplicationForm;
 import com.mfano.mfes.dtos.LoanRepaymentSummary;
 import com.mfano.mfes.models.Group;
 import com.mfano.mfes.models.GroupCollection;
@@ -40,6 +45,7 @@ import com.mfano.mfes.services.PortfolioService;
 import com.mfano.mfes.services.RepaymentService;
 
 import jakarta.validation.Valid;
+import lombok.Data;
 
 @Controller
 @RequestMapping("/business")
@@ -427,7 +433,6 @@ public class BusinessController {
         List<Loan> dues = loanService.getByOverdue(today);
         Map<Long, Long> inst = new HashMap<>();
         Map<Long, LoanRepaymentSummary> summary = new HashMap<>();
-            
 
         for (Loan l : dues) {
             inst.put(
@@ -445,4 +450,91 @@ public class BusinessController {
 
         return "business/arrears";
     }
+
+    /*
+     * @PostMapping("/loans/apply")
+     * public String applyLoan(@ModelAttribute LoanApplicationForm form,
+     * 
+     * @RequestParam("applicationForm") MultipartFile appForm,
+     * 
+     * @RequestParam("passportPhotos") MultipartFile[] passports,
+     * 
+     * @RequestParam("collateralDocs") MultipartFile[] collateralDocs) throws
+     * IOException {
+     * 
+     * String basePath = "uploads/loans/" + form.getClientId() + "/" +
+     * System.currentTimeMillis() + "/";
+     * Files.createDirectories(Paths.get(basePath));
+     * 
+     * if(!appForm.isEmpty()) loanService.saveFile(appForm, basePath);
+     * for(MultipartFile f : passports) if(!f.isEmpty()) loanService.saveFile(f,
+     * basePath);
+     * 
+     * loanService.submitApplication(form, basePath);
+     * return "redirect:/loans/pending";
+     * }
+     * 
+     * @GetMapping("/loans/{id}")
+     * public String loanProfile(@PathVariable Long id, Model model){
+     * Loan loan = loanService.findById(id);
+     * model.addAttribute("loan", loan);
+     * model.addAttribute("client", clientService.findById(loan.getClientId()));
+     * model.addAttribute("schedule", repaymentService.getSchedule(id));
+     * model.addAttribute("payments", repaymentService.getPayments(id));
+     * model.addAttribute("collaterals", collateralService.findByLoan(id));
+     * model.addAttribute("guarantors", guarantorService.findByLoan(id));
+     * return "loan-profile";
+     * }
+     * 
+     * @PostMapping("/loans/{id}/repayment")
+     * public String recordRepayment(@PathVariable Long id, @ModelAttribute
+     * Repayment repayment){
+     * repayment.setLoanId(id);
+     * repaymentService.recordPayment(repayment);
+     * return "redirect:/loans/" + id + "#payments";
+     * }
+     * 
+     * @GetMapping("/par")
+     * public String parCalculator(
+     * 
+     * @RequestParam(defaultValue = "OVERALL") String level,
+     * 
+     * @RequestParam(required = false) Long id,
+     * 
+     * @RequestParam(required = false) @DateTimeFormat(iso =
+     * DateTimeFormatter.ISO.DATE) LocalDate asAtDate,
+     * Model model){
+     * 
+     * if(asAtDate == null) asAtDate = LocalDate.now();
+     * 
+     * Long branchId = level.equals("BRANCH") ? id : null;
+     * Long portfolioId = level.equals("PORTFOLIO") ? id : null;
+     * Long groupId = level.equals("GROUP") ? id : null;
+     * 
+     * ParDto par = parService.calculatePar(branchId, portfolioId, groupId,
+     * asAtDate);
+     * 
+     * model.addAttribute("level", level);
+     * model.addAttribute("selectedId", id);
+     * model.addAttribute("asAtDate", asAtDate);
+     * model.addAttribute("par", par);
+     * model.addAttribute("parLoans", par.getParLoans());
+     * model.addAttribute("items", getItemsForLevel(level)); // returns list of
+     * branches/portfolios/groups
+     * 
+     * return "par-calculator";
+     * }
+     * 
+     * private List<ItemDto> getItemsForLevel(String level){
+     * return switch(level){
+     * case "BRANCH" -> branchService.findAll().stream().map(b -> new
+     * ItemDto(b.getId(), b.getName())).toList();
+     * case "PORTFOLIO" -> portfolioService.findAll().stream().map(p -> new
+     * ItemDto(p.getId(), p.getName())).toList();
+     * case "GROUP" -> groupService.findAll().stream().map(g -> new
+     * ItemDto(g.getId(), g.getName())).toList();
+     * default -> List.of();
+     * };
+     * }
+     */
 }

@@ -14,7 +14,7 @@
     <th:block th:insert="~{partials/_topbar}" />
     <th:block th:insert="~{partials/_sidebar}" />
 
-    <main id="main" class="main">
+    <main id="main" class="main d-flex flex-column min-vh-100">
         <!-- Page Heading -->
         <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
             <div>
@@ -329,96 +329,96 @@
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <!-- ADD GROUP MODAL -->
-                <div class="modal fade" id="addModal" tabindex="-1">
-                    <div class="modal-dialog modal-md modal-dialog-centered">
-                        <div class="modal-content">
-                            <form th:action="@{/manager/groups/save}" method="post">
-                                <div class="modal-header">
-                                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add Group</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Group Name</label>
-                                            <input type="text" name="name" class="form-control"
-                                                placeholder="e.g. Malindi Women Group" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Branch</label>
-                                            <select class="form-select" name="branch" required>
-                                                <option value="">SELECT</option>
-                                                <option th:each="s : ${branches}" th:value="${s.id}"
-                                                    th:text="${s.name}">
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Meeting Day</label>
-                                            <select class="form-select" name="meetingDay" required>
-                                                <option value="" disabled>SELECT</option>
-                                                <option>Monday</option>
-                                                <option>Tuesday</option>
-                                                <option>Wednesday</option>
-                                                <option>Thursday</option>
-                                                <option>Friday</option>
-                                                <option>Saturday</option>
-                                                <option>Sunday</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Meeting Time</label>
-                                            <input type="time" name="meetingTime" class="form-control">
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label">Portfolio</label>
-                                            <select class="form-select" name="folio" required>
-                                                <option value="" disabled>SELECT</option>
-                                                <option th:each="f : ${portfolios}" th:value="${f.id}"
-                                                    th:text="${f.name}">
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Use GPS</label>
-                                            <button type="button" class="btn btn-outline-primary w-100"
-                                                onclick="getLocation('New')">
-                                                <i class="bi bi-crosshair"></i>GPS
-                                            </button>
-                                        </div>
-                                        <div class="col-12">
-                                            <hr>
-                                            <h6><i class="bi bi-geo-alt-fill text-primary"></i> Meeting Location</h6>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Latitude</label>
-                                            <input type="number" step="any" name="latitude" id="latNew"
-                                                class="form-control" placeholder="-3.2199" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Longitude</label>
-                                            <input type="number" step="any" name="longitude" id="lngNew"
-                                                class="form-control" placeholder="40.1167" required>
-                                        </div>
-                                        <div class="col-12">
-                                            <div id="mapNew" style="height: 200px; border-radius: 8px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="reset" class="btn btn-warning">Clear</button>
-                                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i>
-                                        Save</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
         </section>
     </main>
+
+    <!-- ADD GROUP MODAL -->
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/manager/groups/save}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add Group</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Group Name</label>
+                                <input type="text" name="name" class="form-control"
+                                    placeholder="e.g. Malindi Women Group" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Branch</label>
+                                <select class="form-select" name="branch" required>
+                                    <option value="">SELECT</option>
+                                    <option th:each="s : ${branches}" th:value="${s.id}" th:text="${s.name}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Meeting Day</label>
+                                <select class="form-select" name="meetingDay" required>
+                                    <option value="" disabled>SELECT</option>
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Wednesday</option>
+                                    <option>Thursday</option>
+                                    <option>Friday</option>
+                                    <option>Saturday</option>
+                                    <option>Sunday</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Meeting Time</label>
+                                <input type="time" name="meetingTime" class="form-control">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Portfolio</label>
+                                <select class="form-select" name="folio" required>
+                                    <option value="" disabled>SELECT</option>
+                                    <option th:each="f : ${portfolios}" th:value="${f.id}" th:text="${f.name}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Use GPS</label>
+                                <button type="button" class="btn btn-outline-primary w-100"
+                                    onclick="getLocation('New')">
+                                    <i class="bi bi-crosshair"></i>GPS
+                                </button>
+                            </div>
+                            <div class="col-12">
+                                <hr>
+                                <h6><i class="bi bi-geo-alt-fill text-primary"></i> Meeting Location</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Latitude</label>
+                                <input type="number" step="any" name="latitude" id="latNew" class="form-control"
+                                    placeholder="-3.2199" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Longitude</label>
+                                <input type="number" step="any" name="longitude" id="lngNew" class="form-control"
+                                    placeholder="40.1167" required>
+                            </div>
+                            <div class="col-12">
+                                <div id="mapNew" style="height: 200px; border-radius: 8px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-warning">Clear</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i>
+                            Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <th:block th:insert="~{partials/_footer}" />
 </body>

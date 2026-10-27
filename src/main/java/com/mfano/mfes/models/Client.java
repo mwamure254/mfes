@@ -27,7 +27,20 @@ public class Client extends BaseObject{
     private String idNumber;
     @Column(unique = true)
     private String phone;
+    private String gender;
+    private String mpesaNumber;
     private String document;
+    private String email;
+    private String address;
+    private String dob;
+
+    //uploads
+    private String passportPath;
+    private String idFrontPath;
+    private String idBackPath;
+    private String signaturePath;
+    private String businessPhotoPath;
+
     private boolean active = false;
 
     @DecimalMin("0.00")
@@ -35,7 +48,7 @@ public class Client extends BaseObject{
     @DecimalMin("0.00")
     private BigDecimal mla = BigDecimal.ZERO;
     @DecimalMin("0.00")
-    private BigDecimal limit = BigDecimal.ZERO;
+    private BigDecimal loanLimit = BigDecimal.ZERO;
     
     @Column(precision = 9, scale = 6)
     @DecimalMin("-90.0") @DecimalMax("90.0")

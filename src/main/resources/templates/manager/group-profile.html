@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>MFES | Group Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+  <div class="container py-4">
+    <!-- HEADER -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-0" th:text="${group.name}">Tusonge Mbele Group</h3>
+          <span class="badge bg-success" th:text="${group.status}">ACTIVE</span>
+          <small class="text-muted ms-2">Reg No: <span th:text="${group.registrationNumber}"></span> | Members: <span
+              th:text="${#lists.size(clients)}"></span></small>
+        </div>
+        <div class="btn-group">
+          <a th:href="@{/clients/new(groupId=${group.id})}" class="btn btn-primary"><i class="bi bi-person-plus"></i>
+            Add Member</a>
+          <a th:href="@{/groups/{id}/edit(id=${group.id})}" class="btn btn-outline-primary"><i class="bi bi-pencil"></i>
+            Edit</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- LEFT: Group Details -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+          <div class="card-header">Group Information</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Type:</b> <span th:text="${group.groupType}"></span></li>
+            <li class="list-group-item"><b>Date Formed:</b> <span
+                th:text="${#temporals.format(group.dateFormed, 'dd MMM yyyy')}"></span></li>
+            <li class="list-group-item"><b>Meeting:</b> <span
+                th:text="${group.meetingDay + ' at ' + group.meetingTime}"></span></li>
+            <li class="list-group-item"><b>Frequency:</b> <span th:text="${group.meetingFrequency}"></span></li>
+          </ul>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+          <div class="card-header">Location</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>County:</b> <span th:text="${group.county}"></span></li>
+            <li class="list-group-item"><b>Sub-County:</b> <span th:text="${group.subCounty}"></span></li>
+            <li class="list-group-item"><b>Ward:</b> <span th:text="${group.ward}"></span></li>
+            <li class="list-group-item"><b>Venue:</b> <span th:text="${group.meetingVenue}"></span></li>
+          </ul>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header">Officials</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Chair:</b> <span th:text="${group.chairName}"></span> - <small
+                th:text="${group.chairPhone}"></small></li>
+            <li class="list-group-item"><b>Secretary:</b> <span th:text="${group.secretaryName}"></span> - <small
+                th:text="${group.secretaryPhone}"></small></li>
+            <li class="list-group-item"><b>Treasurer:</b> <span th:text="${group.treasurerName}"></span> - <small
+                th:text="${group.treasurerPhone}"></small></li>
+          </ul>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+          <div class="card-header">Documents</div>
+          <div class="card-body">
+            <a th:href="@{/{path}(path=${group.certificatePath})}" target="_blank"
+              class="btn btn-sm btn-outline-secondary mb-2 w-100"><i class="bi bi-file-earmark-pdf"></i> Certificate</a>
+            <a th:href="@{/{path}(path=${group.constitutionPath})}" target="_blank"
+              class="btn btn-sm btn-outline-secondary mb-2 w-100"><i class="bi bi-file-earmark-text"></i>
+              Constitution</a>
+            <a th:href="@{/{path}(path=${group.groupPhotoPath})}" target="_blank"
+              class="btn btn-sm btn-outline-secondary w-100"><i class="bi bi-image"></i> Group Photo</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Members + Stats -->
+      <div class="col-lg-8">
+        <ul class="nav nav-pills mb-3">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill"
+              data-bs-target="#members">Members</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#loans">Group
+              Loans</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#savings">Group
+              Savings</button></li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- MEMBERS TAB -->
+          <div class="tab-pane fade show active" id="members">
+            <div class="card shadow-sm">
+              <!-- Replace the Members Card Header with this -->
+              <div class="card-header d-flex justify-content-between">
+                <span>Group Members</span>
+                <div class="btn-group">
+                  <a th:href="@{/clients/new(groupId=${group.id})}" class="btn btn-sm btn-success"><i
+                      class="bi bi-plus"></i> Add Member</a>
+                  <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                    data-bs-target="#bulkUploadModal">
+                    <i class="bi bi-file-earmark-excel"></i> Bulk Upload
+                  </button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>ID</th>
+                      <th>Phone</th>
+                      <th>Loans</th>
+                      <th>Balance</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="c, stat : ${clients}">
+                      <td th:text="${stat.count}"></td>
+                      <td th:text="${c.firstName + ' + c.lastName}"></td>
+                      <td th:text="${c.idNumber}"></td>
+                      <td th:text="${c.phone}"></td>
+                      <td><span class="badge bg-info" th:text="${c.activeLoans}"></span></td>
+                      <td th:text="${#numbers.formatCurrency(c.totalBalance)}"></td>
+                      <td><a th:href="@{/clients/{id}(id=${c.id})}" class="btn btn-sm btn-outline-primary">View</a></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(clients)}">
+                      <td colspan="7" class="text-center text-muted">No members yet</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP LOANS TAB -->
+          <div class="tab-pane fade" id="loans">
+            <div class="card shadow-sm">
+              <div class="card-header">Group Loans</div>
+              <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Loan No</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="loan : ${groupLoans}">
+                      <td th:text="${loan.loanNumber}"></td>
+                      <td th:text="${#numbers.formatCurrency(loan.amount)}"></td>
+                      <td><span class="badge bg-warning" th:text="${loan.status}"></span></td>
+                      <td th:text="${#numbers.formatCurrency(loan.balance)}"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SAVINGS TAB -->
+          <div class="tab-pane fade" id="savings">
+            <div class="card shadow-sm">
+              <div class="card-header">Group Savings Account</div>
+              <div class="card-body">
+                <h5>Ksh <span th:text="${#numbers.formatDecimal(group.savingsBalance, 1, 2)}"></span></h5>
+                <small class="text-muted">Account No: <span th:text="${group.savingsAccount}"></span></small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK UPLOAD MODAL -->
+  <div class="modal fade" id="bulkUploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <form th:action="@{/groups/{id}/bulk-upload(id=${group.id})}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-file-earmark-excel me-2"></i>Bulk Member Upload</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-info">
+              <b>Instructions:</b>
+              <ol class="mb-0">
+                <li>Download the template below</li>
+                <li>Fill client details. Do not change column headers</li>
+                <li>Upload the completed Excel file here</li>
+              </ol>
+            </div>
+
+            <a th:href="@{/templates/group-members-template.xlsx}" class="btn btn-outline-primary btn-sm mb-3">
+              <i class="bi bi-download"></i> Download Excel Template
+            </a>
+
+            <div class="mb-3">
+              <label class="form-label">Select Excel File .xlsx</label>
+              <input type="file" class="form-control" name="excelFile" accept=".xlsx,.xls" required>
+            </div>
+
+            <div class="table-responsive">
+              <small class="text-muted">Required Columns: FirstName, LastName, IDNumber, Phone, Gender, DOB,
+                BusinessName</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success"><i class="bi bi-upload"></i> Upload Members</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

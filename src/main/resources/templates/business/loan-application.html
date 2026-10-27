@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <meta name="description" content="mfes loan applications page">
+    <meta name="author" content="mfano">
+    <title>MFES | Loan Application</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .preview-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+        }
+    </style>
+</th:block>
+
+<body>
+    <th:block th:insert="~{partials/_topbar}" />
+    <th:block th:insert="~{partials/_sidebar}" />
+
+    <main id="main" class="main d-flex flex-column min-vh-100">
+        <!-- Page Heading -->
+        <div class="pagetitle d-sm-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">
+                    <i class="bi bi-cash-coin me-2"></i>Loan Application
+                </h1>
+            </div>
+
+            <!-- Breadcrumb -->
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/}">
+                            <i class="bi bi-house-door me-1"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/business/loans}">Loans</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Application</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <form th:action="@{/loans/apply}" th:object="${loanApplication}" method="post" enctype="multipart/form-data">
+           <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" th:field="*{clientId}">-->
+
+            <div class="card-body">
+                <!-- TABS -->
+                <ul class="nav nav-tabs mb-3" id="loanTab" role="tablist">
+                    <li class="nav-item"><button type="button" class="nav-link active" data-bs-toggle="tab"
+                            data-bs-target="#client">Client & Loan</button></li>
+                    <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#collateral">Collateral</button></li>
+                    <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#guarantors">Guarantors</button></li>
+                    <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#docs">Documents</button></li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- TAB 1: CLIENT & LOAN DETAILS -->
+                    <div class="tab-pane fade show active" id="client">
+                        <h6 class="text-muted mb-3">Client Information</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Client</label>
+                                <input type="text" class="form-control"
+                                    th:value="${client.firstName + ' + client.lastName}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">ID Number</label>
+                                <input type="text" class="form-control" th:value="${client.idNumber}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Group</label>
+                                <input type="text" class="form-control" th:value="${client.groupName}" readonly>
+                            </div>
+                        </div>
+
+                        <h6 class="text-muted mb-3">Loan Details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Loan Product</label>
+                                <select class="form-select" th:field="*{loanProductId}" required>
+                                    <option value="">Select Product</option>
+                                    <option th:each="p : ${loanProducts}" th:value="${p.id}"
+                                        th:text="${p.name + ' - ' + p.interestRate + '%'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Amount Applied (Ksh)</label>
+                                <input type="number" step="0.01" min="1000" class="form-control" th:field="*{amount}"
+                                    required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Term Months</label>
+                                <input type="number" min="1" max="36" class="form-control" th:field="*{termMonths}"
+                                    required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Interest Rate %</label>
+                                <input type="number" step="0.1" class="form-control" th:field="*{interestRate}">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Application Date</label>
+                                <input type="date" class="form-control" th:field="*{applicationDate}"
+                                    th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Loan Purpose</label>
+                                <input type="text" class="form-control" th:field="*{loanPurpose}"
+                                    placeholder="Stock, School fees, Business expansion">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Repayment Frequency</label>
+                                <select class="form-select" th:field="*{repaymentFrequency}">
+                                    <option value="WEEKLY">Weekly</option>
+                                    <option value="MONTHLY">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Expected Disbursement</label>
+                                <input type="date" class="form-control" th:field="*{expectedDisbursementDate}">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Remarks / Justification</label>
+                                <textarea class="form-control" rows="2" th:field="*{remarks}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: COLLATERAL -->
+                    <div class="tab-pane fade" id="collateral">
+                        <h6 class="text-muted mb-3">Collateral Details</h6>
+                        <div id="collateralWrapper">
+                            <div class="row g-3 border rounded p-3 mb-3 collateral-item">
+                                <div class="col-md-3">
+                                    <label class="form-label">Collateral Type</label>
+                                    <select class="form-select" name="collaterals[0].type">
+                                        <option>Logbook</option>
+                                        <option>Title Deed</option>
+                                        <option>Electronics</option>
+                                        <option>Business Stock</option>
+                                        <option>Household Goods</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Description</label>
+                                    <input type="text" class="form-control" name="collaterals[0].description"
+                                        placeholder="Toyota V8 KCD 123A">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Estimated Value (Ksh)</label>
+                                    <input type="number" step="0.01" class="form-control"
+                                        name="collaterals[0].estimatedValue">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" name="collaterals[0].location">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                        onclick="removeCollateral(this)"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addCollateral()"><i
+                                class="bi bi-plus"></i> Add Another Collateral</button>
+                    </div>
+
+                    <!-- TAB 3: GUARANTORS -->
+                    <div class="tab-pane fade" id="guarantors">
+                        <h6 class="text-muted mb-3">Guarantors - Minimum 2 Required</h6>
+                        <div id="guarantorWrapper">
+                            <div class="row g-3 border rounded p-3 mb-3 guarantor-item">
+                                <div class="col-md-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="guarantors[0].name" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">ID Number</label>
+                                    <input type="text" class="form-control" name="guarantors[0].idNumber" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" name="guarantors[0].phone">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Relationship</label>
+                                    <input type="text" class="form-control" name="guarantors[0].relationship">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                        onclick="removeGuarantor(this)"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addGuarantor()"><i
+                                class="bi bi-plus"></i> Add Guarantor</button>
+                    </div>
+
+                    <!-- TAB 4: DOCUMENTS UPLOAD -->
+                    <div class="tab-pane fade" id="docs">
+                        <h6 class="text-muted mb-3">Upload Supporting Documents</h6>
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <label class="form-label">Loan Application Form</label>
+                                <input type="file" class="form-control" name="applicationForm" accept=".pdf,.jpg,.png">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Passport Photos</label>
+                                <input type="file" class="form-control" name="passportPhotos" accept="image/*" multiple>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Collateral Documents</label>
+                                <input type="file" class="form-control" name="collateralDocs" accept=".pdf,.jpg,.png"
+                                    multiple>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Mpesa Statements</label>
+                                <input type="file" class="form-control" name="bankStatements" accept=".pdf">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Business Permit / License</label>
+                                <input type="file" class="form-control" name="businessPermit" accept=".pdf,.jpg,.png">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Other Documents</label>
+                                <input type="file" class="form-control" name="otherDocs" accept=".pdf,.jpg,.png"
+                                    multiple>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a th:href="@{/clients/{id}(id=${client.id})}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-success"><i class="bi bi-check2-circle me-1"></i> Submit
+                    Application</button>
+            </div>
+        </form>
+        
+    </main>
+
+    <th:block th:insert="~{partials/_footer}" />
+    <script>
+        let collateralIndex = 1;
+        function addCollateral() {
+            const html = `
+    <div class="row g-3 border rounded p-3 mb-3 collateral-item">
+      <div class="col-md-3"><label class="form-label">Collateral Type</label>
+        <select class="form-select" name="collaterals[${collateralIndex}].type">
+          <option>Logbook</option><option>Title Deed</option><option>Electronics</option><option>Business Stock</option><option>Other</option>
+        </select></div>
+      <div class="col-md-3"><label class="form-label">Description</label><input type="text" class="form-control" name="collaterals[${collateralIndex}].description"></div>
+      <div class="col-md-2"><label class="form-label">Est. Value</label><input type="number" class="form-control" name="collaterals[${collateralIndex}].estimatedValue"></div>
+      <div class="col-md-3"><label class="form-label">Location</label><input type="text" class="form-control" name="collaterals[${collateralIndex}].location"></div>
+      <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCollateral(this)"><i class="bi bi-trash"></i></button></div>
+    </div>`;
+            document.getElementById('collateralWrapper').insertAdjacentHTML('beforeend', html);
+            collateralIndex++;
+        }
+        function removeCollateral(btn) { btn.closest('.collateral-item').remove(); }
+
+        let guarantorIndex = 1;
+        function addGuarantor() {
+            const html = `
+    <div class="row g-3 border rounded p-3 mb-3 guarantor-item">
+      <div class="col-md-3"><label class="form-label">Full Name</label><input type="text" class="form-control" name="guarantors[${guarantorIndex}].name" required></div>
+      <div class="col-md-2"><label class="form-label">ID Number</label><input type="text" class="form-control" name="guarantors[${guarantorIndex}].idNumber" required></div>
+      <div class="col-md-2"><label class="form-label">Phone</label><input type="tel" class="form-control" name="guarantors[${guarantorIndex}].phone"></div>
+      <div class="col-md-3"><label class="form-label">Relationship</label><input type="text" class="form-control" name="guarantors[${guarantorIndex}].relationship"></div>
+      <div class="col-md-2 d-flex align-items-end"><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGuarantor(this)"><i class="bi bi-trash"></i></button></div>
+    </div>`;
+            document.getElementById('guarantorWrapper').insertAdjacentHTML('beforeend', html);
+            guarantorIndex++;
+        }
+        function removeGuarantor(btn) { btn.closest('.guarantor-item').remove(); }
+    </script>
+</body>
+
+</html>
