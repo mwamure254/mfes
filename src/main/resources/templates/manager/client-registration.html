@@ -63,19 +63,19 @@
             <div class="tab-pane fade show active" id="bio">
               <div class="row g-3">
                 <div class="col-md-4">
-                  <label class="form-label">First Name</label>
+                  <label class="form-label">First Name<sup class="text-danger">*</sup></label>
                   <input type="text" class="form-control" th:field="*{fin}" required>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Last Name</label>
+                  <label class="form-label">Last Name<sup class="text-danger">*</sup></label>
                   <input type="text" class="form-control" th:field="*{lan}" required>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">ID Number</label>
+                  <label class="form-label">ID Number<sup class="text-danger">*</sup></label>
                   <input type="text" class="form-control" th:field="*{idNumber}" required>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Gender</label>
+                  <label class="form-label">Gender<sup class="text-danger">*</sup></label>
                   <select class="form-select" th:field="*{gender}" required>
                     <option value="">SELECT</option>
                     <option value="MALE">Male</option>
@@ -83,11 +83,11 @@
                   </select>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Date of Birth</label>
+                  <label class="form-label">Date of Birth<sup class="text-danger">*</sup></label>
                   <input type="date" class="form-control" th:field="*{dob}">
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Group</label>
+                  <label class="form-label">Group<sup class="text-danger">*</sup></label>
                   <select class="form-select" th:field="*{group}" required>
                     <option value="">SELECT</option>
                     <option th:each="g : ${groups}" th:value="${g.id}" th:text="${g.name}"></option>
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label class="form-label">Residence Type</label>
+                  <label class="form-label">Residence Type<sup class="text-danger">*</sup></label>
                   <select class="form-select" name="residenceType" required>
                     <option value="">SELECT</option>
                     <option value="Rental">Rental</option>
@@ -117,7 +117,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label class="form-label">Education Level</label>
+                  <label class="form-label">Education Level<sup class="text-danger">*</sup></label>
                   <select class="form-select" name="educationLevel">
                     <option value="">SELECT</option>
                     <option value="Primary">Primary</option>
@@ -158,13 +158,13 @@
               <div class="row g-3">
                 <div class="col-md-4"><label class="form-label">Phone</label><input type="tel" class="form-control"
                     th:field="*{phone}"></div>
-                <div class="col-md-4"><label class="form-label">M-Pesa</label><input type="tel" class="form-control"
+                <div class="col-md-4"><label class="form-label">M-Pesa<sup class="text-danger">*</sup></label><input type="tel" class="form-control"
                     th:field="*{mpesaNumber}"></div>
                 <div class="col-md-4"><label class="form-label">Email</label><input type="email" class="form-control"
                     th:field="*{email}"></div>
-                <div class="col-12"><label class="form-label">Physical Address</label>
+                <div class="col-12"><label class="form-label">Physical Address<sup class="text-danger">*</sup></label>
                   <textarea class="form-control" placeholder="Describe your location giving nearest larndmark..."
-                    rows="2" th:field="*{address}"></textarea>
+                    rows="3" th:field="*{address}"></textarea>
                 </div>
               </div>
             </div>
@@ -174,19 +174,19 @@
               <div class="row g-4">
 
                 <div class="col-md-3">
-                  <label class="form-label">Passport Photo</label>
+                  <label class="form-label">Passport Photo<sup class="text-danger">*</sup></label>
                   <input type="file" class="form-control form-control-sm" name="passportPhoto" accept="image/*"
                     onchange="preview(this, 'passportPreview')">
                 </div>
 
                 <div class="col-md-3">
-                  <label class="form-label">ID Front</label>
+                  <label class="form-label">ID Front<sup class="text-danger">*</sup></label>
                   <input type="file" class="form-control form-control-sm" name="idFront" accept="image/*,.pdf"
                     onchange="preview(this, 'idFrontPreview')">
                 </div>
 
                 <div class="col-md-3">
-                  <label class="form-label">ID Back</label>
+                  <label class="form-label">ID Back<sup class="text-danger">*</sup></label>
                   <input type="file" class="form-control form-control-sm" name="idBack" accept="image/*,.pdf"
                     onchange="preview(this, 'idBackPreview')">
                 </div>
@@ -198,8 +198,8 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Signature</label>
-                  <input type="file" class="form-control" name="signature" accept="image/*,.pdf">
+                  <label class="form-label">Signature<sup class="text-danger">*</sup></label>
+                  <input type="file" class="form-control form-control-sm" name="signature" accept="image/*,.pdf">
                   <small class="text-muted">Upload scanned signature or clear photo on white paper</small>
                 </div>
 
