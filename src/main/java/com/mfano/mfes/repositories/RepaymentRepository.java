@@ -17,128 +17,153 @@ import com.mfano.mfes.models.Repayments;
 import jakarta.persistence.LockModeType;
 
 public interface RepaymentRepository extends JpaRepository<Repayments, Long> {
-  @Query("""
-      SELECT i FROM Repayments i
-      WHERE i.dueDate < :today
-        AND i.totalAmount > i.amountPaid
-      ORDER BY i.dueDate ASC
-      """)
-  List<Repayments> findOverdue(
-      @Param("today") LocalDate today);
+    @Query("""
+            SELECT i FROM Repayments i
+            WHERE i.dueDate < :today
+              AND i.totalAmount > i.amountPaid
+            ORDER BY i.dueDate ASC
+            """)
+    List<Repayments> findOverdue(
+            @Param("today") LocalDate today);
 
-  @Query("""
-      SELECT i FROM Repayments i
-      WHERE i.dueDate BETWEEN :start AND :end
-        AND i.totalAmount > i.amountPaid
-      ORDER BY i.dueDate ASC
-      """)
-  List<Repayments> findUnpaidBetween(
-      @Param("start") LocalDate start,
-      @Param("end") LocalDate end);
+    @Query("""
+            SELECT i FROM Repayments i
+            WHERE i.dueDate BETWEEN :start AND :end
+              AND i.totalAmount > i.amountPaid
+            ORDER BY i.dueDate ASC
+            """)
+    List<Repayments> findUnpaidBetween(
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end);
 
-  @Query("""
-      SELECT i FROM Repayments i
-      WHERE i.dueDate <= :end
-        AND i.totalAmount > i.amountPaid
-      ORDER BY i.dueDate ASC
-      """)
-  List<Repayments> findUnpaidUpto(@Param("end") LocalDate end);
+    @Query("""
+            SELECT i FROM Repayments i
+            WHERE i.dueDate <= :end
+              AND i.totalAmount > i.amountPaid
+            ORDER BY i.dueDate ASC
+            """)
+    List<Repayments> findUnpaidUpto(@Param("end") LocalDate end);
 
-  @Query("""
-      SELECT i FROM Repayments i
-      WHERE i.totalAmount > i.amountPaid
-      ORDER BY i.dueDate ASC
-      """)
-  List<Repayments> findAllUnpaid();
+    @Query("""
+            SELECT i FROM Repayments i
+            WHERE i.totalAmount > i.amountPaid
+            ORDER BY i.dueDate ASC
+            """)
+    List<Repayments> findAllUnpaid();
 
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  @Query("""
-      SELECT i
-      FROM Repayments i
-      WHERE i.id = :id
-      """)
-  Optional<Repayments> findById(
-      @Param("id") Long id);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT i
+            FROM Repayments i
+            WHERE i.id = :id
+            """)
+    Optional<Repayments> findById(
+            @Param("id") Long id);
 
-  @Query("""
-          SELECT i.id
-          FROM Repayments i
-          WHERE i.dueDate <= :today
-            AND i.status = :status
-          ORDER BY i.dueDate ASC, i.id ASC
-      """)
-  List<Long> findDueInstallmentIds(
-      @Param("today") LocalDate today,
-      @Param("status") String status);
+    @Query("""
+                SELECT i.id
+                FROM Repayments i
+                WHERE i.dueDate <= :today
+                  AND i.status = :status
+                ORDER BY i.dueDate ASC, i.id ASC
+            """)
+    List<Long> findDueInstallmentIds(
+            @Param("today") LocalDate today,
+            @Param("status") String status);
 
-  @Query("""
-          select i.id
-          from Repayments i
-          where i.dueDate <= :today
-            and i.status = :status
-          order by i.dueDate asc, i.id asc
-      """)
-  List<Long> findDueIds(
-      @Param("today") LocalDate today,
-      @Param("status") String status);
+    @Query("""
+                select i.id
+                from Repayments i
+                where i.dueDate <= :today
+                  and i.status = :status
+                order by i.dueDate asc, i.id asc
+            """)
+    List<Long> findDueIds(
+            @Param("today") LocalDate today,
+            @Param("status") String status);
 
-  boolean existsById(Long id);
+    boolean existsById(Long id);
 
-  @Query("""
-      SELECT new com.mfano.mfes.dtos.LoanRepaymentSummary(
-          r.loan.id,
-          COUNT(r.id),
-          MAX(r.installmentNo),
-          COALESCE(SUM(r.principalAmount), 0),
-          COALESCE(SUM(r.interestAmount), 0),
-          COALESCE(SUM(r.totalAmount), 0),
-          COALESCE(SUM(r.amountPaid), 0),
-          COALESCE(SUM(r.penalty), 0),
-          COALESCE(SUM(r.totalAmount), 0)
-              - COALESCE(SUM(r.amountPaid), 0)
-      )
-      FROM Repayments r
-        where r.dueDate <= :end
-      GROUP BY r.loan.id
-      ORDER BY r.loan.id
-      """)
-  List<LoanRepaymentSummary> getLoanSummaries(@Param("end") LocalDate end);
+    @Query("""
+            SELECT new com.mfano.mfes.dtos.LoanRepaymentSummary(
+                r.loan.id,
+                COUNT(r.id),
+                MAX(r.installmentNo),
+                COALESCE(SUM(r.principalAmount), 0),
+                COALESCE(SUM(r.interestAmount), 0),
+                COALESCE(SUM(r.totalAmount), 0),
+                COALESCE(SUM(r.amountPaid), 0),
+                COALESCE(SUM(r.penalty), 0),
+                COALESCE(SUM(r.totalAmount), 0)
+                    - COALESCE(SUM(r.amountPaid), 0)
+            )
+            FROM Repayments r
+              where r.dueDate <= :end
+            GROUP BY r.loan.id
+            ORDER BY r.loan.id
+            """)
+    List<LoanRepaymentSummary> getLoanSummaries(@Param("end") LocalDate end);
 
-  @Query("""
-      SELECT new com.mfano.mfes.dtos.LoanRepaymentSummary(
-          r.loan.id,
-          COUNT(r.id),
-          MAX(r.installmentNo),
-          COALESCE(SUM(r.principalAmount), 0),
-          COALESCE(SUM(r.interestAmount), 0),
-          COALESCE(SUM(r.totalAmount), 0),
-          COALESCE(SUM(r.amountPaid), 0),
-          COALESCE(SUM(r.penalty), 0),
-          COALESCE(SUM(r.totalAmount), 0)
-              - COALESCE(SUM(r.amountPaid), 0)
-      )
-      FROM Repayments r
-      WHERE r.loan = :l AND r.dueDate <= :end
-      GROUP BY r.loan.id
-      ORDER BY r.loan.id
-      """)
-  LoanRepaymentSummary getLoanRepaymentSummaries(Loan l, LocalDate end);
+    @Query("""
+            SELECT new com.mfano.mfes.dtos.LoanRepaymentSummary(
+                r.loan.id,
+                COUNT(r.id),
+                MAX(r.installmentNo),
+                COALESCE(SUM(r.principalAmount), 0),
+                COALESCE(SUM(r.interestAmount), 0),
+                COALESCE(SUM(r.totalAmount), 0),
+                COALESCE(SUM(r.amountPaid), 0),
+                COALESCE(SUM(r.penalty), 0),
+                COALESCE(SUM(r.totalAmount), 0)
+                    - COALESCE(SUM(r.amountPaid), 0)
+            )
+            FROM Repayments r
+            WHERE r.loan = :l AND r.dueDate <= :end
+            GROUP BY r.loan.id
+            ORDER BY r.loan.id
+            """)
+    LoanRepaymentSummary getLoanRepaymentSummaries(Loan l, LocalDate end);
 
-  // Sum amount paid
-  @Query("""
-      SELECT COALESCE(SUM(r.amountPaid), 0)
-      FROM Repayments r
-      WHERE r.loan = :loan
-      """)
-  BigDecimal sumAmountPaidByLoan(@Param("loan") Loan loan);
+    // Sum amount paid
+    @Query("""
+            SELECT COALESCE(SUM(r.amountPaid), 0)
+            FROM Repayments r
+            WHERE r.loan = :loan
+            """)
+    BigDecimal sumAmountPaidByLoan(@Param("loan") Loan loan);
 
-  // Sum total scheduled repayments
-  @Query("""
-      SELECT COALESCE(SUM(r.totalAmount), 0)
-      FROM Repayments r
-      WHERE r.loan = :loan
-      """)
-  BigDecimal sumTotalAmountByLoan(@Param("loan") Loan loan);
+    // Sum total scheduled repayments
+    @Query("""
+            SELECT COALESCE(SUM(r.totalAmount), 0)
+            FROM Repayments r
+            WHERE r.loan = :loan
+            """)
+    BigDecimal sumTotalAmountByLoan(@Param("loan") Loan loan);
 
-  Long countByLoan(Loan loan);
+    Long countByLoan(Loan loan);
+
+    // 1. All repayments for a client
+    @Query("SELECT r FROM Repayments r WHERE r.loan.client.id = :clientId ORDER BY r.dueDate ASC")
+    List<Repayments> findByClientId(@Param("clientId") Long clientId);
+
+    // 2. All repayments for a client for a specific loan
+    @Query("SELECT r FROM Repayments r WHERE r.loan.id = :loanId AND r.loan.client.id = :clientId ORDER BY r.installmentNo ASC")
+    List<Repayments> findByClientIdAndLoanId(@Param("clientId") Long clientId, @Param("loanId") Long loanId);
+
+    // 3. Due repayments for a client
+    @Query("SELECT r FROM Repayments r WHERE r.loan.client.id = :clientId AND r.status IN ('PENDING','LATE') AND r.dueDate <= :today ORDER BY r.dueDate ASC")
+    List<Repayments> findDueByClient(@Param("clientId") Long clientId, @Param("today") LocalDate today);
+
+    // 4. Paid repayments for a client within date range
+    @Query("SELECT r FROM Repayments r WHERE r.loan.client.id = :clientId AND r.status = 'PAID' AND r.paidDate BETWEEN :start AND :end ORDER BY r.paidDate DESC")
+    List<Repayments> findPaidByClientAndDate(@Param("clientId") Long clientId, @Param("start") LocalDate start,
+            @Param("end") LocalDate end);
+
+    // 5. Sum of amount paid by client
+    @Query("SELECT COALESCE(SUM(r.amountPaid), 0) FROM Repayments r WHERE r.loan.client.id = :clientId")
+    BigDecimal sumAmountPaidByClient(@Param("clientId") Long clientId);
+
+    // 6. Sum of outstanding by client
+    @Query("SELECT COALESCE(SUM(r.totalAmount - r.amountPaid), 0) FROM Repayments r WHERE r.loan.client.id = :clientId AND r.status IN ('PENDING','LATE')")
+    BigDecimal sumOutstandingByClient(@Param("clientId") Long clientId);
 }

@@ -303,4 +303,24 @@ public class RepaymentService {
     public Long getCountByLoan(Loan loan) {
         return repaymentRepository.countByLoan(loan);
     }
+
+    public List<Repayments> getAllRepaymentsForClient(Long clientId) {
+        return repaymentRepository.findByClientId(clientId);
+    }
+
+    public List<Repayments> getDueRepaymentsForClient(Long clientId) {
+        return repaymentRepository.findDueByClient(clientId, LocalDate.now());
+    }
+
+    public List<Repayments> getRepaymentsForClientLoan(Long clientId, Long loanId) {
+        return repaymentRepository.findByClientIdAndLoanId(clientId, loanId);
+    }
+
+    public BigDecimal getTotalPaidByClient(Long clientId) {
+        return repaymentRepository.sumAmountPaidByClient(clientId);
+    }
+
+    public BigDecimal getTotalOutstandingByClient(Long clientId) {
+        return repaymentRepository.sumOutstandingByClient(clientId);
+    }
 }
