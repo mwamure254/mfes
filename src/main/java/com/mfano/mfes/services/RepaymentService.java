@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.mfano.mfes.dtos.LoanRepaymentSummary;
@@ -322,5 +323,10 @@ public class RepaymentService {
 
     public BigDecimal getTotalOutstandingByClient(Long clientId) {
         return repaymentRepository.sumOutstandingByClient(clientId);
+    }
+
+    public @Nullable Object last10ByClient(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'last10ByClient'");
     }
 }

@@ -122,8 +122,10 @@
                     <tbody>
                         <tr th:each="c, stat : ${clients}" th:id="'c-' + ${c.id}">
                             <td th:text="${stat.count}">1</td>
-                            <td th:text="${c.reference}">1</td>
-                            <td class="fw-bold" th:text="${c.fin + ' ' + c.lan}">John Doe</td>
+                            <td>
+                                <a th:href="@{/manager/clients/{id}(id=${c.id})}" th:text="${c.reference}"></a>
+                            </td>
+                            <td class="fw-bold" th:text="${c.firstName + ' ' + c.lastName}">John Doe</td>
                             <td th:text="${c.idNumber}">12345678</td>
                             <td th:text="${c.group != null ? c.group.name : 'No Group'}"></td>
                             <td th:text="${c.branch != null ? c.branch.name : 'No Branch'}"></td>
@@ -184,7 +186,7 @@
                                                     class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">Delete <strong
-                                                    th:text="${c.fin + ' ' + c.lan}"></strong>? <br><small
+                                                    th:text="${c.firstName + ' ' + c.lastName}"></strong>? <br><small
                                                     class="text-danger">This cannot be undone.</small></div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
@@ -215,13 +217,13 @@
                                                 <div class="row g-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">First Name</label>
-                                                        <input type="text" name="fin" class="form-control"
-                                                            th:value="${c.fin}" required>
+                                                        <input type="text" name="firstName" class="form-control"
+                                                            th:value="${c.firstName}" required>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">Last Name</label>
-                                                        <input type="text" name="lan" class="form-control"
-                                                            th:value="${c.lan}" required>
+                                                        <input type="text" name="lastName" class="form-control"
+                                                            th:value="${c.lastName}" required>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">ID Number</label>
@@ -329,9 +331,9 @@
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6"><label class="form-label">First Name</label><input type="text"
-                                    name="fin" class="form-control" required></div>
+                                    name="firstName" class="form-control" required></div>
                             <div class="col-md-6"><label class="form-label">Last Name</label><input type="text"
-                                    name="lan" class="form-control" required></div>
+                                    name="lastName" class="form-control" required></div>
                             <div class="col-md-6"><label class="form-label">ID Number</label><input type="text"
                                     name="idNumber" class="form-control" required></div>
                             <div class="col-md-6"><label class="form-label">Phone</label><input type="text" name="phone"

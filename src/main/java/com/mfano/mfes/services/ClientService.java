@@ -43,6 +43,7 @@ public class ClientService {
     }
 
     public void save(Client cs){
+        cs.setBranch(cs.getGroup().getBranch());
         clientRepository.save(cs);
     }
 

@@ -1,14 +1,8 @@
 package com.mfano.mfes.web;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,12 +22,13 @@ import com.mfano.mfes.config.CustomUserDetails;
 import com.mfano.mfes.models.Client;
 import com.mfano.mfes.models.Group;
 import com.mfano.mfes.models.Portfolio;
-import com.mfano.mfes.models.Referee;
 import com.mfano.mfes.models.Repayments;
+import com.mfano.mfes.services.AccountService;
 import com.mfano.mfes.services.ClientService;
 import com.mfano.mfes.services.GroupService;
 import com.mfano.mfes.services.LoanService;
 import com.mfano.mfes.services.PortfolioService;
+import com.mfano.mfes.services.RefereeService;
 import com.mfano.mfes.services.RepaymentService;
 import com.mfano.mfes.utils.documents.FileUpload;
 
@@ -43,7 +38,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/manager")
 public class ManagerController {
 
-    private final FileUpload fileUpload_1;
     private final UserService userService;
     private final AuditService auditService;
     private final PortfolioService portfolioService;
@@ -52,12 +46,13 @@ public class ManagerController {
     private final ClientService clientService;
     private final LoanService loanService;
     private final RepaymentService repaymentService;
-    private final FileUpload fileUpload;
+    private final RefereeService refereeService;
+    private final AccountService accountService;
 
-    public ManagerController(UserService userService, AuditService auditService,
-            PortfolioService portfolioService, LoanService loanService,
-            GroupService groupService, BranchService branchService, FileUpload fileUpload,
-            ClientService clientService, RepaymentService repaymentService, FileUpload fileUpload_1) {
+    public ManagerController(UserService userService, AuditService auditService, RefereeService refereeService,
+            PortfolioService portfolioService, LoanService loanService, AccountService accountService,
+            GroupService groupService, BranchService branchService, 
+            ClientService clientService, RepaymentService repaymentService) {
         this.userService = userService;
         this.auditService = auditService;
         this.portfolioService = portfolioService;
@@ -66,8 +61,8 @@ public class ManagerController {
         this.clientService = clientService;
         this.repaymentService = repaymentService;
         this.loanService = loanService;
-        this.fileUpload = fileUpload;
-        this.fileUpload_1 = fileUpload_1;
+        this.refereeService = refereeService;
+        this.accountService = accountService;
     }
 
     @GetMapping("/{option}")
@@ -114,7 +109,6 @@ public class ManagerController {
             case "client-form":
                 red.addAttribute("client", new Client());
                 red.addAttribute("groups", groupService.getAll());
-                red.addAttribute("branches", branchService.findAll());
                 dir = "manager/client-registration";
                 break;
         }
@@ -314,47 +308,15 @@ public class ManagerController {
     /// To Do
     /// /////////////////////////////////
 
-    @PostMapping("/clients/new")
-    public String newClient(@ModelAttribute Client client,
-            @RequestParam("passportPhoto") MultipartFile passport,
-            @RequestParam("idFront") MultipartFile idFront,
-            @RequestParam("idBack") MultipartFile idBack,
-            @RequestParam("businessPhoto") MultipartFile business,
-            @RequestParam("signature") MultipartFile signature) throws IOException {
-
-        // 1. Save files to /uploads/clients/{idNumber}/
-        String basePath = "documents/clients/" + client.getIdNumber() + "/";
-
-        if (!passport.isEmpty())
-            client.setPassportPath(fileUpload.uploadFile(passport, basePath));
-        if (!idFront.isEmpty())
-            client.setIdFrontPath(fileUpload.uploadFile(idFront, basePath));
-        if (!idBack.isEmpty())
-            client.setIdBackPath(fileUpload.uploadFile(idBack, basePath));
-        if (!business.isEmpty())
-            client.setBusinessPhotoPath(fileUpload.uploadFile(business, basePath));
-        if (!signature.isEmpty())
-            client.setSignaturePath(fileUpload.uploadFile(signature, basePath));
-
-        clientService.save(client);
-        return "redirect:/clients";
-    }
-
     @GetMapping("/clients/{id}")
-    public String profile(@PathVariable Long id, Model model) {
+    public String profile(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails auth) {
+        userService.getPrices(auth, model);
         model.addAttribute("client", clientService.getById(id));
         model.addAttribute("loans", loanService.getByClient(clientService.getById(id)));
-        // model.addAttribute("accounts", accountService.findByClient(id));
-        // model.addAttribute("referees", refereeService.findByClient(id));
-        // model.addAttribute("repayments", repaymentService.last10ByClient(id));
-        return "client-profile";
-    }
-
-    @PostMapping("/clients/{id}/referees")
-    public String addReferee(@PathVariable Long id, @ModelAttribute Referee referee) {
-        // referee.setClientId(id);
-        // refereeService.save(referee);
-        return "redirect:/clients/" + id + "#referees";
+        model.addAttribute("accounts", accountService.findByClient(id));
+        model.addAttribute("referees", refereeService.findByClient(id));
+        model.addAttribute("repayments", repaymentService.getAllRepaymentsForClient(id));
+        return "manager/client-profile";
     }
 
     @PostMapping("/repayments/record")

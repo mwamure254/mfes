@@ -160,8 +160,8 @@
 
                             <tbody>
                                 <tr th:each="item : ${dues}">
-                                    <td th:text="${item.loan.client?.fin
-                + ' ' + item.loan.client?.lan}">
+                                    <td th:text="${item.loan.client?.firstName
+                + ' ' + item.loan.client?.lastName}">
                                         Member Name
                                     </td>
 

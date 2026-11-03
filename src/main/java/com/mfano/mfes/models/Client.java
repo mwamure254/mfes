@@ -1,6 +1,7 @@
 package com.mfano.mfes.models;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import com.mfano.mfes.auth.models.BaseObject;
 import com.mfano.mfes.auth.models.Branch;
@@ -21,8 +22,8 @@ import lombok.Setter;
 @Getter 
 @Table(name="clients")
 public class Client extends BaseObject{
-    private String fin;
-    private String lan;
+    private String firstName;
+    private String lastName;
     @Column(unique = true)
     private String idNumber;
     @Column(unique = true)
@@ -31,8 +32,12 @@ public class Client extends BaseObject{
     private String mpesaNumber;
     private String document;
     private String email;
+    private LocalDate dob;
     private String address;
-    private String dob;
+
+    private String maritalStatus;
+    private String residenseType;
+    private String educationLevel;
 
     //uploads
     private String passportPath;
@@ -40,6 +45,18 @@ public class Client extends BaseObject{
     private String idBackPath;
     private String signaturePath;
     private String businessPhotoPath;
+
+    //business
+    private String businessLocation;
+    private String businessName;
+    private String businessType;
+    private String monthlyIncome;
+
+    //nextof kin
+    private String nextOfKin;
+    private String kinPhone;
+    private String kinRelationship;
+    private String remarks;
 
     private boolean active = false;
 
